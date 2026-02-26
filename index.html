@@ -1,0 +1,1812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Periodic Table Spectrum Viewer</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #fff;
+            overflow: hidden;
+        }
+        #loading {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.9); display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 1000;
+        }
+        .spinner {
+            width: 50px; height: 50px; border: 5px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff; border-radius: 50%; animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        #loading p { margin-top: 20px; font-size: 18px; }
+        #app-container { width: 100vw; height: 100vh; position: relative; display: none; }
+        #canvas-container { width: 100%; height: 100%; }
+        #info-panel-wrapper {
+            position: absolute; top: 0; right: 0; height: 100vh;
+            transition: transform 0.3s ease;
+        }
+        #info-panel-wrapper.hidden { 
+            display: none;
+        }
+        #info-panel-wrapper.collapsed {
+            transform: translateX(100%);
+        }
+        #info-panel {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px; max-width: 450px; height: 100%;
+            overflow-y: auto; backdrop-filter: blur(10px); border-left: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        #info-panel-toggle {
+            position: absolute;
+            left: -40px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 80px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-right: none;
+            border-radius: 10px 0 0 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #4fc3f7;
+            transition: background 0.3s;
+            user-select: none;
+            z-index: 10;
+        }
+        #info-panel-toggle:hover {
+            background: rgba(0, 0, 0, 0.9);
+        }
+        #info-panel h2 { margin-bottom: 10px; color: #4fc3f7; }
+        #element-details { margin-bottom: 15px; font-size: 14px; color: #ccc; }
+        .origin-badge {
+            display: inline-block; padding: 4px 8px; margin: 2px; border-radius: 4px;
+            font-size: 11px; font-weight: bold;
+        }
+        .astronomy-info {
+            background: rgba(79, 195, 247, 0.1); border-left: 3px solid #4fc3f7;
+            padding: 10px; margin: 10px 0; border-radius: 4px; font-size: 13px; line-height: 1.5;
+        }
+        .astronomy-info h4 { color: #4fc3f7; margin-bottom: 5px; font-size: 14px; }
+        .chemistry-info {
+            background: rgba(126, 211, 33, 0.1); border-left: 3px solid #7ED321;
+            padding: 10px; margin: 10px 0; border-radius: 4px; font-size: 13px; line-height: 1.5;
+        }
+        .chemistry-info h4 { color: #7ED321; margin-bottom: 5px; font-size: 14px; }
+        .physics-info {
+            background: rgba(189, 16, 224, 0.1); border-left: 3px solid #BD10E0;
+            padding: 10px; margin: 10px 0; border-radius: 4px; font-size: 13px; line-height: 1.5;
+        }
+        .physics-info h4 { color: #BD10E0; margin-bottom: 5px; font-size: 14px; }
+        .collapsible-header {
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .collapsible-header:hover {
+            opacity: 0.8;
+        }
+        .collapse-icon {
+            font-size: 12px;
+            transition: transform 0.3s;
+        }
+        .collapse-icon.collapsed {
+            transform: rotate(-90deg);
+        }
+        .collapsible-content {
+            max-height: 1000px;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .collapsible-content.collapsed {
+            max-height: 0;
+        }
+        #controls-info {
+            position: absolute; bottom: 60px; left: 50%; transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7); padding: 10px 20px; border-radius: 5px;
+            font-size: 14px; text-align: center;
+        }
+        footer { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); font-size: 12px; }
+        footer a { color: #4fc3f7; text-decoration: none; }
+        
+        #title-3d {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 48px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 
+                0 1px 0 #ccc,
+                0 2px 0 #c9c9c9,
+                0 3px 0 #bbb,
+                0 4px 0 #b9b9b9,
+                0 5px 0 #aaa,
+                0 6px 1px rgba(0,0,0,.1),
+                0 0 5px rgba(0,0,0,.1),
+                0 1px 3px rgba(0,0,0,.3),
+                0 3px 5px rgba(0,0,0,.2),
+                0 5px 10px rgba(0,0,0,.25),
+                0 10px 10px rgba(0,0,0,.2),
+                0 20px 20px rgba(0,0,0,.15);
+            letter-spacing: 3px;
+            z-index: 100;
+            pointer-events: none;
+            background: linear-gradient(to bottom, #ffffff 0%, #4fc3f7 50%, #2a5298 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        #legend-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 100;
+        }
+        
+        #legend-panel h3 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+            color: #4fc3f7;
+            text-align: center;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+            font-size: 12px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+            margin-right: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        #spectrum-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            overflow-y: auto;
+        }
+        
+        #spectrum-modal.active {
+            display: block;
+        }
+        
+        #spectrum-modal-content {
+            max-width: 1400px;
+            margin: 40px auto;
+            padding: 30px;
+            position: relative;
+        }
+        
+        #spectrum-modal-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 40px;
+            color: #fff;
+            cursor: pointer;
+            z-index: 2001;
+            background: rgba(0, 0, 0, 0.5);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+        
+        #spectrum-modal-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .spectrum-clickable {
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        
+        .spectrum-clickable:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading">
+        <div class="spinner"></div>
+        <p>Loading Periodic Table...</p>
+    </div>
+    <div id="app-container">
+        <div id="title-3d">PERIODIC TABLE</div>
+        <div id="legend-panel">
+            <h3>Element Categories</h3>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #FF6B6B;"></div>
+                <span>Alkali Metal</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #FFA07A;"></div>
+                <span>Alkaline Earth Metal</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #87CEEB;"></div>
+                <span>Transition Metal</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #4A90E2;"></div>
+                <span>Post-Transition Metal</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #F5A623;"></div>
+                <span>Metalloid</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #7ED321;"></div>
+                <span>Nonmetal</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #50E3C2;"></div>
+                <span>Halogen</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #BD10E0;"></div>
+                <span>Noble Gas</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #FFD700;"></div>
+                <span>Lanthanide</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #FF69B4;"></div>
+                <span>Actinide</span>
+            </div>
+        </div>
+        <div id="canvas-container"></div>
+        <div id="info-panel-wrapper" class="hidden">
+            <div id="info-panel-toggle" onclick="const wrapper = document.getElementById('info-panel-wrapper'); wrapper.classList.toggle('collapsed'); this.textContent = wrapper.classList.contains('collapsed') ? '◀' : '▶';">▶</div>
+            <div id="info-panel">
+                <h2 id="element-name"></h2>
+                <div id="element-details"></div>
+                <div id="spectrum-container"></div>
+            </div>
+        </div>
+        <div id="controls-info">
+            <p>Click an element to view its spectrum | ESC to deselect | Mouse to rotate, scroll to zoom</p>
+        </div>
+        <footer>
+            <p>Created by Andy Kong | Data from <a href="https://www.nist.gov/pml/atomic-spectra-database" target="_blank">NIST</a></p>
+        </footer>
+    </div>
+    <div id="spectrum-modal">
+        <div id="spectrum-modal-close" onclick="document.getElementById('spectrum-modal').classList.remove('active');">&times;</div>
+        <div id="spectrum-modal-content"></div>
+    </div>
+    <script type="importmap">
+    { "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }}
+    </script>
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+
+        const SPECTRAL_DATA = { elements: [
+            { symbol: "H", name: "Hydrogen", atomicNumber: 1, category: "nonmetal",
+              cosmicOrigin: "Big Bang", originColor: "#FFD700",
+              astronomyInfo: "The most abundant element in the universe, created during the Big Bang 13.8 billion years ago. Hydrogen makes up about 75% of all normal matter and is the fuel that powers stars through nuclear fusion.",
+              chemistryInfo: "The simplest element with one proton and one electron. Forms covalent bonds in H₂ molecules. Essential for water (H₂O), acids, and all organic compounds. Has three isotopes: protium, deuterium, and tritium.",
+              physicsInfo: "Electron configuration: 1s¹. Isotopes: ¹H (99.985%), ²H/Deuterium (0.015%), ³H/Tritium (trace, radioactive). Atomic mass: 1.008 u. Ionization energy: 13.6 eV.",
+              spectralLines: [
+                { wavelength: 656.3, intensity: 1.0, transition: "n=3→n=2 (Hα, Balmer)" },
+                { wavelength: 486.1, intensity: 0.5, transition: "n=4→n=2 (Hβ, Balmer)" },
+                { wavelength: 434.0, intensity: 0.3, transition: "n=5→n=2 (Hγ, Balmer)" },
+                { wavelength: 410.2, intensity: 0.2, transition: "n=6→n=2 (Hδ, Balmer)" }
+            ]},
+            { symbol: "He", name: "Helium", atomicNumber: 2, category: "noble-gas",
+              cosmicOrigin: "Big Bang", originColor: "#FFD700",
+              astronomyInfo: "The second most abundant element in the universe, primarily created during the Big Bang. Also produced by nuclear fusion in stars. Helium was first discovered in the Sun's spectrum before being found on Earth.",
+              chemistryInfo: "Noble gas with complete electron shell, chemically inert. Does not form compounds under normal conditions. Lowest boiling point (-269°C). Used in balloons, diving, and cryogenics.",
+              physicsInfo: "Electron configuration: 1s². Isotopes: ⁴He (99.999863%), ³He (0.000137%). Atomic mass: 4.003 u. Ionization energy: 24.6 eV (highest of all elements).",
+              spectralLines: [
+                { wavelength: 587.6, intensity: 1.0, transition: "3s→2p (D-line)" },
+                { wavelength: 667.8, intensity: 0.3, transition: "3d→2p" },
+                { wavelength: 501.6, intensity: 0.4, transition: "3s→2p" },
+                { wavelength: 447.1, intensity: 0.2, transition: "4d→2p" }
+            ]},
+            { symbol: "Li", name: "Lithium", atomicNumber: 3, category: "alkali-metal",
+              cosmicOrigin: "Cosmic Ray & Dying Stars", originColor: "#9370DB",
+              astronomyInfo: "Created through multiple processes: some from the Big Bang, most from dying low-mass stars, and some isotopes from cosmic ray collisions. Lithium is one of only three elements created in the Big Bang that still exist today.",
+              chemistryInfo: "Highly reactive alkali metal, stored in oil. Forms ionic compounds with halogens. Lightest metal and least dense solid. Used in rechargeable batteries and psychiatric medication.",
+              physicsInfo: "Electron configuration: [He] 2s¹. Isotopes: ⁷Li (92.5%), ⁶Li (7.5%). Atomic mass: 6.94 u. Shells: 2, 1.",
+              spectralLines: [
+                { wavelength: 670.8, intensity: 1.0, transition: "2p→2s (D-line)" },
+                { wavelength: 610.4, intensity: 0.3, transition: "3d→2p" }
+            ]},
+            { symbol: "C", name: "Carbon", atomicNumber: 6, category: "nonmetal",
+              cosmicOrigin: "Dying Low Mass Stars", originColor: "#FF6B9D",
+              astronomyInfo: "The basis of all known life, carbon is forged in the cores of dying low-mass stars through the triple-alpha process. As Carl Sagan said, 'We are made of star stuff' - and carbon is a prime example.",
+              chemistryInfo: "Basis of organic chemistry, forms 4 covalent bonds. Exists as diamond, graphite, graphene, and fullerenes. Essential for all known life. Forms millions of compounds.",
+              physicsInfo: "Electron configuration: [He] 2s² 2p². Isotopes: ¹²C (98.93%), ¹³C (1.07%), ¹⁴C (trace, radioactive). Atomic mass: 12.011 u. Shells: 2, 4.",
+              spectralLines: [
+                { wavelength: 247.9, intensity: 1.0, transition: "2p→2s" },
+                { wavelength: 426.7, intensity: 0.4, transition: "3d→2p" },
+                { wavelength: 538.0, intensity: 0.3, transition: "3p→2s" }
+            ]},
+            { symbol: "N", name: "Nitrogen", atomicNumber: 7, category: "nonmetal",
+              cosmicOrigin: "Dying Low Mass Stars", originColor: "#FF6B9D",
+              astronomyInfo: "Essential for DNA and proteins, nitrogen is created in dying low-mass stars through the CNO cycle. The nitrogen in our DNA was literally forged in the hearts of ancient stars billions of years ago.",
+              chemistryInfo: "Diatomic gas (N₂) with triple bond, very stable. Essential for proteins and DNA. Forms nitrates and ammonia. Makes up 78% of Earth's atmosphere.",
+              physicsInfo: "Electron configuration: [He] 2s² 2p³. Isotopes: ¹⁴N (99.636%), ¹⁵N (0.364%). Atomic mass: 14.007 u. Shells: 2, 5.",
+              spectralLines: [
+                { wavelength: 399.5, intensity: 0.8, transition: "3p→3s" },
+                { wavelength: 500.5, intensity: 0.5, transition: "3d→3p" },
+                { wavelength: 567.6, intensity: 0.3, transition: "4s→3p" }
+            ]},
+            { symbol: "O", name: "Oxygen", atomicNumber: 8, category: "nonmetal",
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Created in massive stars and scattered across the universe when these stars explode as supernovae. Oxygen is the third most abundant element in the universe and essential for life as we know it.",
+              chemistryInfo: "Highly reactive, forms oxides with most elements. Essential for respiration. Exists as O₂ and O₃ (ozone). Second most electronegative element after fluorine.",
+              physicsInfo: "Electron configuration: [He] 2s² 2p⁴. Isotopes: ¹⁶O (99.757%), ¹⁸O (0.205%), ¹⁷O (0.038%). Atomic mass: 15.999 u. Shells: 2, 6.",
+              spectralLines: [
+                { wavelength: 777.4, intensity: 1.0, transition: "3p→3s" },
+                { wavelength: 844.6, intensity: 0.7, transition: "3d→3p" },
+                { wavelength: 615.8, intensity: 0.4, transition: "4s→3p" }
+            ]},
+            { symbol: "Na", name: "Sodium", atomicNumber: 11, category: "alkali-metal",
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Forged in massive stars and released during supernova explosions. Sodium's distinctive yellow spectral lines make it easy to identify in astronomical observations of distant stars and galaxies.",
+              chemistryInfo: "Highly reactive alkali metal, reacts violently with water producing H₂ gas. Forms Na⁺ ions. Essential for nerve function and fluid balance. Found in table salt (NaCl).",
+              physicsInfo: "Electron configuration: [Ne] 3s¹. Isotope: ²³Na (100%). Atomic mass: 22.990 u. Shells: 2, 8, 1.",
+              spectralLines: [
+                { wavelength: 589.0, intensity: 1.0, transition: "3p→3s (D1-line)" },
+                { wavelength: 589.6, intensity: 0.9, transition: "3p→3s (D2-line)" },
+                { wavelength: 568.3, intensity: 0.2, transition: "4d→3p" }
+            ]},
+            { symbol: "Fe", name: "Iron", atomicNumber: 26, category: "transition-metal",
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "The iron in your blood was created in the core of a dying massive star. Iron is the final element that can be produced by fusion in stellar cores before the star collapses and explodes as a supernova.",
+              chemistryInfo: "Transition metal, forms Fe²⁺ and Fe³⁺ ions. Essential for hemoglobin in blood. Most common element on Earth by mass. Rusts in presence of oxygen and water.",
+              physicsInfo: "Electron configuration: [Ar] 3d⁶ 4s². Isotopes: ⁵⁶Fe (91.754%), ⁵⁴Fe (5.845%), ⁵⁷Fe (2.119%), ⁵⁸Fe (0.282%). Atomic mass: 55.845 u. Shells: 2, 8, 14, 2.",
+              spectralLines: [
+                { wavelength: 438.4, intensity: 0.9, transition: "3d→3p" },
+                { wavelength: 440.5, intensity: 0.8, transition: "3d→3p" },
+                { wavelength: 495.8, intensity: 0.6, transition: "4s→3d" },
+                { wavelength: 526.9, intensity: 0.7, transition: "3d→3p" },
+                { wavelength: 532.8, intensity: 0.5, transition: "3d→3p" }
+            ]},
+            { symbol: "Cu", name: "Copper", atomicNumber: 29, category: "transition-metal",
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Created during supernova explosions when massive stars die. Elements heavier than iron like copper require the enormous energy of a supernova to form through rapid neutron capture.",
+              chemistryInfo: "Excellent electrical and thermal conductor. Forms Cu⁺ and Cu²⁺ ions. Used in wiring, plumbing, and coins. Antimicrobial properties. Forms green patina (copper carbonate) when exposed to air.",
+              physicsInfo: "Electron configuration: [Ar] 3d¹⁰ 4s¹. Isotopes: ⁶³Cu (69.15%), ⁶⁵Cu (30.85%). Atomic mass: 63.546 u. Shells: 2, 8, 18, 1.",
+              spectralLines: [
+                { wavelength: 324.8, intensity: 1.0, transition: "4p→4s" },
+                { wavelength: 327.4, intensity: 0.9, transition: "4p→4s" },
+                { wavelength: 510.6, intensity: 0.4, transition: "4d→4p" },
+                { wavelength: 521.8, intensity: 0.5, transition: "4d→4p" }
+            ]},
+            { symbol: "Au", name: "Gold", atomicNumber: 79, category: "transition-metal",
+              cosmicOrigin: "Merging Neutron Stars", originColor: "#FF4500",
+              astronomyInfo: "Gold is so heavy that it requires extreme conditions to form - likely created when neutron stars collide. Every gold atom on Earth was forged in the violent collision of dead stars, making it truly precious from a cosmic perspective.",
+              chemistryInfo: "Noble metal, highly unreactive. Does not tarnish or corrode. Forms Au⁺ and Au³⁺ ions. Used in jewelry, electronics, and medicine. Excellent conductor and highly malleable.",
+              physicsInfo: "Electron configuration: [Xe] 4f¹⁴ 5d¹⁰ 6s¹. Isotope: ¹⁹⁷Au (100%). Atomic mass: 196.967 u. Shells: 2, 8, 18, 32, 18, 1.",
+              spectralLines: [
+                { wavelength: 267.6, intensity: 1.0, transition: "6p→6s" },
+                { wavelength: 312.3, intensity: 0.7, transition: "6p→6s" },
+                { wavelength: 479.3, intensity: 0.3, transition: "6d→6p" }
+            ]},
+            // Period 2 continued
+            { symbol: "Be", name: "Beryllium", atomicNumber: 4, category: "alkaline-earth", row: 2, col: 2,
+              cosmicOrigin: "Cosmic Ray Fission", originColor: "#9370DB",
+              astronomyInfo: "Created by cosmic ray spallation when high-energy particles collide with heavier elements.",
+              chemistryInfo: "Alkaline earth metal, forms strong covalent bonds. Toxic and carcinogenic. Used in aerospace alloys and X-ray windows. Forms Be²⁺ ions.",
+              physicsInfo: "Electron configuration: [He] 2s². Isotope: ⁹Be (100%). Atomic mass: 9.012 u. Shells: 2, 2.",
+              spectralLines: [{ wavelength: 234.9, intensity: 1.0, transition: "2p→2s" }, { wavelength: 313.0, intensity: 0.4, transition: "3s→2p" }]},
+            { symbol: "B", name: "Boron", atomicNumber: 5, category: "metalloid", row: 2, col: 13,
+              cosmicOrigin: "Cosmic Ray Fission", originColor: "#9370DB",
+              astronomyInfo: "Produced by cosmic ray spallation, making it one of the rarest elements in the universe.",
+              chemistryInfo: "Metalloid with unique chemistry. Forms electron-deficient compounds. Essential for plant growth. Used in fiberglass and semiconductors.",
+              physicsInfo: "Electron configuration: [He] 2s² 2p¹. Isotopes: ¹¹B (80.1%), ¹⁰B (19.9%). Atomic mass: 10.81 u. Shells: 2, 3.",
+              spectralLines: [{ wavelength: 249.7, intensity: 1.0, transition: "2p→2s" }, { wavelength: 345.1, intensity: 0.3, transition: "3s→2p" }]},
+            { symbol: "F", name: "Fluorine", atomicNumber: 9, category: "halogen", row: 2, col: 17,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Created in dying stars and supernovae explosions.",
+              chemistryInfo: "Most electronegative and reactive element. Forms fluorides with all elements except He, Ne, Ar. Used in toothpaste (fluoride) and Teflon. Highly toxic as F₂ gas.",
+              physicsInfo: "Electron configuration: [He] 2s² 2p⁵. Isotope: ¹⁹F (100%). Atomic mass: 18.998 u. Shells: 2, 7.",
+              spectralLines: [{ wavelength: 685.6, intensity: 0.8, transition: "3p→3s" }, { wavelength: 690.2, intensity: 0.6, transition: "3d→3p" }]},
+            { symbol: "Ne", name: "Neon", atomicNumber: 10, category: "noble-gas", row: 2, col: 18,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Forged in massive stars through carbon burning, released in supernovae.",
+              chemistryInfo: "Noble gas, chemically inert. No known stable compounds. Used in neon signs (red-orange glow), lasers, and cryogenic refrigeration.",
+              physicsInfo: "Electron configuration: [He] 2s² 2p⁶. Isotopes: ²⁰Ne (90.48%), ²²Ne (9.25%), ²¹Ne (0.27%). Atomic mass: 20.180 u. Shells: 2, 8.",
+              spectralLines: [{ wavelength: 640.2, intensity: 1.0, transition: "3p→3s" }, { wavelength: 585.2, intensity: 0.7, transition: "3s→2p" }]},
+            // Period 3
+            { symbol: "Mg", name: "Magnesium", atomicNumber: 12, category: "alkaline-earth", row: 3, col: 2,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Created in massive stars and scattered by supernovae. Essential for chlorophyll in plants.",
+              chemistryInfo: "Alkaline earth metal, burns with brilliant white light. Forms Mg²⁺ ions. Essential for chlorophyll and over 300 enzymes. Reacts with acids. Used in alloys, fireworks, and as a dietary supplement.",
+              physicsInfo: "Electron configuration: [Ne] 3s². Isotopes: ²⁴Mg (78.99%), ²⁶Mg (11.01%), ²⁵Mg (10.00%). Atomic mass: 24.305 u. Shells: 2, 8, 2.",
+              spectralLines: [{ wavelength: 518.4, intensity: 1.0, transition: "3p→3s" }, { wavelength: 383.8, intensity: 0.5, transition: "4s→3p" }]},
+            { symbol: "Al", name: "Aluminum", atomicNumber: 13, category: "metal", row: 3, col: 13,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Produced in supernovae, aluminum is the most abundant metal in Earth's crust.",
+              chemistryInfo: "Post-transition metal, lightweight and corrosion-resistant. Forms Al³⁺ ions. Amphoteric (reacts with both acids and bases). Used in aircraft, cans, foil, and construction. Third most abundant element in Earth's crust.",
+              physicsInfo: "Electron configuration: [Ne] 3s² 3p¹. Isotope: ²⁷Al (100%). Atomic mass: 26.982 u. Shells: 2, 8, 3.",
+              spectralLines: [{ wavelength: 396.2, intensity: 1.0, transition: "3p→3s" }, { wavelength: 394.4, intensity: 0.9, transition: "4s→3p" }]},
+            { symbol: "Si", name: "Silicon", atomicNumber: 14, category: "metalloid", row: 3, col: 14,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Created in massive stars, silicon is the basis of rocks and computer chips.",
+              chemistryInfo: "Metalloid, forms covalent bonds. Basis of silicate minerals and glass. Essential for semiconductors and computer chips. Forms SiO₂ (quartz, sand). Second most abundant element in Earth's crust after oxygen.",
+              physicsInfo: "Electron configuration: [Ne] 3s² 3p². Isotopes: ²⁸Si (92.23%), ²⁹Si (4.67%), ³⁰Si (3.10%). Atomic mass: 28.085 u. Shells: 2, 8, 4.",
+              spectralLines: [{ wavelength: 390.6, intensity: 1.0, transition: "3p→3s" }, { wavelength: 288.2, intensity: 0.6, transition: "4s→3p" }]},
+            { symbol: "P", name: "Phosphorus", atomicNumber: 15, category: "nonmetal", row: 3, col: 15,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Essential for DNA and ATP, created in supernovae explosions.",
+              chemistryInfo: "Highly reactive nonmetal, exists as white, red, and black allotropes. Essential for DNA, RNA, and ATP. Forms phosphates. Used in fertilizers, matches, and detergents. Never found free in nature.",
+              physicsInfo: "Electron configuration: [Ne] 3s² 3p³. Isotope: ³¹P (100%). Atomic mass: 30.974 u. Shells: 2, 8, 5.",
+              spectralLines: [{ wavelength: 253.6, intensity: 1.0, transition: "3p→3s" }, { wavelength: 255.3, intensity: 0.8, transition: "4s→3p" }]},
+            { symbol: "S", name: "Sulfur", atomicNumber: 16, category: "nonmetal", row: 3, col: 16,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Forged in massive stars and released in supernova explosions.",
+              chemistryInfo: "Nonmetal, forms S²⁻ ions and many compounds. Essential for proteins (cysteine, methionine). Forms sulfuric acid (H₂SO₄), the most produced industrial chemical. Gives rotten eggs their smell (H₂S). Used in vulcanizing rubber.",
+              physicsInfo: "Electron configuration: [Ne] 3s² 3p⁴. Isotopes: ³²S (94.99%), ³⁴S (4.25%), ³³S (0.75%), ³⁶S (0.01%). Atomic mass: 32.06 u. Shells: 2, 8, 6.",
+              spectralLines: [{ wavelength: 469.4, intensity: 0.9, transition: "3p→3s" }, { wavelength: 545.4, intensity: 0.7, transition: "4s→3p" }]},
+            { symbol: "Cl", name: "Chlorine", atomicNumber: 17, category: "halogen", row: 3, col: 17,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Created in supernovae, essential for life and common in Earth's oceans.",
+              chemistryInfo: "Highly reactive halogen, toxic yellow-green gas as Cl₂. Forms Cl⁻ ions (chloride). Essential for stomach acid (HCl) and nerve function. Used in water purification, bleach, and PVC plastic. Found in table salt (NaCl).",
+              physicsInfo: "Electron configuration: [Ne] 3s² 3p⁵. Isotopes: ³⁵Cl (75.76%), ³⁷Cl (24.24%). Atomic mass: 35.45 u. Shells: 2, 8, 7.",
+              spectralLines: [{ wavelength: 479.5, intensity: 0.8, transition: "3p→3s" }, { wavelength: 725.7, intensity: 0.6, transition: "4s→3p" }]},
+            { symbol: "Ar", name: "Argon", atomicNumber: 18, category: "noble-gas", row: 3, col: 18,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Produced in supernovae, argon makes up about 1% of Earth's atmosphere.",
+              chemistryInfo: "Noble gas, chemically inert with complete electron shell. No stable compounds. Third most abundant gas in Earth's atmosphere (0.93%). Used in welding, light bulbs, and as protective atmosphere for reactive materials.",
+              physicsInfo: "Electron configuration: [Ne] 3s² 3p⁶. Isotopes: ⁴⁰Ar (99.60%), ³⁶Ar (0.34%), ³⁸Ar (0.06%). Atomic mass: 39.948 u. Shells: 2, 8, 8.",
+              spectralLines: [{ wavelength: 696.5, intensity: 1.0, transition: "4p→4s" }, { wavelength: 706.7, intensity: 0.8, transition: "4p→4s" }]},
+            // Period 4
+            { symbol: "K", name: "Potassium", atomicNumber: 19, category: "alkali-metal", row: 4, col: 1,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Created in supernovae, essential for nerve function in living organisms.",
+              chemistryInfo: "Highly reactive alkali metal, soft enough to cut with a knife. Forms K⁺ ions. Essential for nerve impulses, muscle contraction, and heart function. Reacts violently with water. Found in bananas and used in fertilizers.",
+              physicsInfo: "Electron configuration: [Ar] 4s¹. Isotopes: ³⁹K (93.26%), ⁴¹K (6.73%), ⁴⁰K (0.01%, radioactive). Atomic mass: 39.098 u. Shells: 2, 8, 8, 1.",
+              spectralLines: [{ wavelength: 766.5, intensity: 1.0, transition: "4p→4s" }, { wavelength: 769.9, intensity: 0.9, transition: "4p→4s" }]},
+            { symbol: "Ca", name: "Calcium", atomicNumber: 20, category: "alkaline-earth", row: 4, col: 2,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "The calcium in your bones was created in exploding stars billions of years ago.",
+              chemistryInfo: "Alkaline earth metal, forms Ca²⁺ ions. Essential for bones, teeth, and muscle contraction. Fifth most abundant element in Earth's crust. Reacts with water. Found in limestone (CaCO₃), chalk, and marble.",
+              physicsInfo: "Electron configuration: [Ar] 4s². Isotopes: ⁴⁰Ca (96.94%), ⁴⁴Ca (2.09%), ⁴²Ca (0.65%), ⁴⁸Ca (0.19%), ⁴³Ca (0.14%), ⁴⁶Ca (0.004%). Atomic mass: 40.078 u. Shells: 2, 8, 8, 2.",
+              spectralLines: [{ wavelength: 422.7, intensity: 1.0, transition: "4p→4s" }, { wavelength: 393.4, intensity: 0.7, transition: "5s→4p" }]},
+            { symbol: "Sc", name: "Scandium", atomicNumber: 21, category: "transition-metal", row: 4, col: 3,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Rare element created in supernovae explosions.",
+              chemistryInfo: "Transition metal, forms Sc³⁺ ions. Lightweight and strong. Used in aerospace alloys, baseball bats, and bicycle frames. Rare in Earth's crust. Tarnishes in air.",
+              physicsInfo: "Electron configuration: [Ar] 3d¹ 4s². Isotope: ⁴⁵Sc (100%). Atomic mass: 44.956 u. Shells: 2, 8, 9, 2.",
+              spectralLines: [{ wavelength: 402.4, intensity: 0.9, transition: "3d→4s" }, { wavelength: 390.7, intensity: 0.6, transition: "4p→4s" }]},
+            { symbol: "Ti", name: "Titanium", atomicNumber: 22, category: "transition-metal", row: 4, col: 4,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Forged in supernovae, titanium is strong, light, and corrosion-resistant.",
+              chemistryInfo: "Transition metal, forms Ti²⁺, Ti³⁺, and Ti⁴⁺ ions. Strong as steel but 45% lighter. Highly corrosion-resistant. Used in aircraft, spacecraft, medical implants, and white paint (TiO₂).",
+              physicsInfo: "Electron configuration: [Ar] 3d² 4s². Isotopes: ⁴⁸Ti (73.72%), ⁴⁶Ti (8.25%), ⁴⁷Ti (7.44%), ⁴⁹Ti (5.41%), ⁵⁰Ti (5.18%). Atomic mass: 47.867 u. Shells: 2, 8, 10, 2.",
+              spectralLines: [{ wavelength: 498.2, intensity: 0.9, transition: "3d→4s" }, { wavelength: 453.3, intensity: 0.7, transition: "4p→3d" }]},
+            { symbol: "V", name: "Vanadium", atomicNumber: 23, category: "transition-metal", row: 4, col: 5,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Created in supernovae, used in steel alloys for strength.",
+              chemistryInfo: "Transition metal, forms V²⁺, V³⁺, V⁴⁺, and V⁵⁺ ions. Adds strength and toughness to steel. Used in tools, springs, and jet engines. Named after Vanadis, Norse goddess of beauty, for its colorful compounds.",
+              physicsInfo: "Electron configuration: [Ar] 3d³ 4s². Isotopes: ⁵¹V (99.75%), ⁵⁰V (0.25%, radioactive). Atomic mass: 50.942 u. Shells: 2, 8, 11, 2.",
+              spectralLines: [{ wavelength: 437.9, intensity: 0.8, transition: "3d→4s" }, { wavelength: 411.2, intensity: 0.6, transition: "4p→3d" }]},
+            { symbol: "Cr", name: "Chromium", atomicNumber: 24, category: "transition-metal", row: 4, col: 6,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Produced in supernovae, gives rubies their red color.",
+              chemistryInfo: "Transition metal, forms Cr²⁺, Cr³⁺, and Cr⁶⁺ ions. Extremely hard and corrosion-resistant. Used in stainless steel and chrome plating. Gives emeralds and rubies their colors. Essential trace element for glucose metabolism.",
+              physicsInfo: "Electron configuration: [Ar] 3d⁵ 4s¹. Isotopes: ⁵²Cr (83.79%), ⁵³Cr (9.50%), ⁵⁰Cr (4.35%), ⁵⁴Cr (2.36%). Atomic mass: 51.996 u. Shells: 2, 8, 13, 1.",
+              spectralLines: [{ wavelength: 425.4, intensity: 1.0, transition: "3d→4s" }, { wavelength: 427.5, intensity: 0.9, transition: "4p→3d" }]},
+            { symbol: "Mn", name: "Manganese", atomicNumber: 25, category: "transition-metal", row: 4, col: 7,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Created in supernovae, essential for photosynthesis in plants.",
+              chemistryInfo: "Transition metal, forms Mn²⁺, Mn³⁺, Mn⁴⁺, and Mn⁷⁺ ions. Essential for photosynthesis and bone formation. Used in steel production and batteries. Permanganate (MnO₄⁻) is a strong oxidizer used in water treatment.",
+              physicsInfo: "Electron configuration: [Ar] 3d⁵ 4s². Isotope: ⁵⁵Mn (100%). Atomic mass: 54.938 u. Shells: 2, 8, 13, 2.",
+              spectralLines: [{ wavelength: 403.1, intensity: 1.0, transition: "3d→4s" }, { wavelength: 403.3, intensity: 0.9, transition: "4p→3d" }]},
+            { symbol: "Co", name: "Cobalt", atomicNumber: 27, category: "transition-metal", row: 4, col: 9,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Forged in supernovae, essential for vitamin B12.",
+              chemistryInfo: "Transition metal, forms Co²⁺ and Co³⁺ ions. Essential component of vitamin B12. Used in rechargeable batteries, magnets, and blue pigments. Ferromagnetic like iron and nickel.",
+              physicsInfo: "Electron configuration: [Ar] 3d⁷ 4s². Isotope: ⁵⁹Co (100%). Atomic mass: 58.933 u. Shells: 2, 8, 15, 2.",
+              spectralLines: [{ wavelength: 345.4, intensity: 0.9, transition: "3d→4s" }, { wavelength: 340.5, intensity: 0.8, transition: "4p→3d" }]},
+            { symbol: "Ni", name: "Nickel", atomicNumber: 28, category: "transition-metal", row: 4, col: 10,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Created in supernovae, abundant in Earth's core and meteorites.",
+              chemistryInfo: "Transition metal, forms Ni²⁺ and Ni³⁺ ions. Corrosion-resistant and ferromagnetic. Used in stainless steel, coins, rechargeable batteries, and catalysts. Major component of Earth's core. Can cause allergic reactions.",
+              physicsInfo: "Electron configuration: [Ar] 3d⁸ 4s². Isotopes: ⁵⁸Ni (68.08%), ⁶⁰Ni (26.22%), ⁶²Ni (3.63%), ⁶¹Ni (1.14%), ⁶⁴Ni (0.93%). Atomic mass: 58.693 u. Shells: 2, 8, 16, 2.",
+              spectralLines: [{ wavelength: 352.5, intensity: 1.0, transition: "3d→4s" }, { wavelength: 341.5, intensity: 0.8, transition: "4p→3d" }]},
+            { symbol: "Zn", name: "Zinc", atomicNumber: 30, category: "transition-metal", row: 4, col: 12,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Produced in supernovae, essential for immune function and wound healing.",
+              chemistryInfo: "Transition metal, forms Zn²⁺ ions. Essential for immune system, wound healing, and DNA synthesis. Used in galvanizing steel, brass alloys, and batteries. Found in oysters, meat, and beans.",
+              physicsInfo: "Electron configuration: [Ar] 3d¹⁰ 4s². Isotopes: ⁶⁴Zn (49.17%), ⁶⁶Zn (27.73%), ⁶⁸Zn (18.45%), ⁶⁷Zn (4.04%), ⁷⁰Zn (0.61%). Atomic mass: 65.38 u. Shells: 2, 8, 18, 2.",
+              spectralLines: [{ wavelength: 213.9, intensity: 1.0, transition: "4p→4s" }, { wavelength: 481.1, intensity: 0.4, transition: "5s→4p" }]},
+            { symbol: "Ga", name: "Gallium", atomicNumber: 31, category: "metal", row: 4, col: 13,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Created in supernovae, melts in your hand at 30°C.",
+              chemistryInfo: "Post-transition metal, forms Ga³⁺ ions. Melts at 29.76°C (can melt in your hand). Used in semiconductors, LEDs, and solar panels. Liquid over a wide temperature range. Non-toxic.",
+              physicsInfo: "Electron configuration: [Ar] 3d¹⁰ 4s² 4p¹. Isotopes: ⁶⁹Ga (60.11%), ⁷¹Ga (39.89%). Atomic mass: 69.723 u. Shells: 2, 8, 18, 3.",
+              spectralLines: [{ wavelength: 417.2, intensity: 1.0, transition: "4p→4s" }, { wavelength: 403.3, intensity: 0.7, transition: "5s→4p" }]},
+            { symbol: "Ge", name: "Germanium", atomicNumber: 32, category: "metalloid", row: 4, col: 14,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Forged in supernovae, used in semiconductors and fiber optics.",
+              chemistryInfo: "Metalloid, forms Ge²⁺ and Ge⁴⁺ ions. Important semiconductor used in transistors and fiber optics. Predicted by Mendeleev before its discovery. Brittle and silvery-white.",
+              physicsInfo: "Electron configuration: [Ar] 3d¹⁰ 4s² 4p². Isotopes: ⁷⁴Ge (36.73%), ⁷²Ge (27.31%), ⁷⁰Ge (20.52%), ⁷³Ge (7.76%), ⁷⁶Ge (7.67%). Atomic mass: 72.630 u. Shells: 2, 8, 18, 4.",
+              spectralLines: [{ wavelength: 303.9, intensity: 0.9, transition: "4p→4s" }, { wavelength: 265.2, intensity: 0.7, transition: "5s→4p" }]},
+            { symbol: "As", name: "Arsenic", atomicNumber: 33, category: "metalloid", row: 4, col: 15,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Created in supernovae, infamous as a poison but essential in trace amounts.",
+              chemistryInfo: "Metalloid, forms As³⁻, As³⁺, and As⁵⁺ ions. Infamous poison but essential in trace amounts. Used in semiconductors, wood preservatives, and pesticides. Forms toxic arsine gas (AsH₃).",
+              physicsInfo: "Electron configuration: [Ar] 3d¹⁰ 4s² 4p³. Isotope: ⁷⁵As (100%). Atomic mass: 74.922 u. Shells: 2, 8, 18, 5.",
+              spectralLines: [{ wavelength: 228.8, intensity: 0.9, transition: "4p→4s" }, { wavelength: 234.9, intensity: 0.7, transition: "5s→4p" }]},
+            { symbol: "Se", name: "Selenium", atomicNumber: 34, category: "nonmetal", row: 4, col: 16,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Produced in supernovae, essential for thyroid function.",
+              chemistryInfo: "Nonmetal, forms Se²⁻ ions. Essential for thyroid function and antioxidant enzymes. Photoconductor used in photocopiers. Found in Brazil nuts, seafood, and meat. Toxic in large amounts.",
+              physicsInfo: "Electron configuration: [Ar] 3d¹⁰ 4s² 4p⁴. Isotopes: ⁸⁰Se (49.61%), ⁷⁸Se (23.77%), ⁷⁶Se (9.37%), ⁸²Se (8.73%), ⁷⁷Se (7.63%), ⁷⁴Se (0.89%). Atomic mass: 78.971 u. Shells: 2, 8, 18, 6.",
+              spectralLines: [{ wavelength: 196.0, intensity: 1.0, transition: "4p→4s" }, { wavelength: 203.9, intensity: 0.8, transition: "5s→4p" }]},
+            { symbol: "Br", name: "Bromine", atomicNumber: 35, category: "halogen", row: 4, col: 17,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Created in supernovae, one of only two liquid elements at room temperature.",
+              chemistryInfo: "Halogen, forms Br⁻ ions. One of only two elements liquid at room temperature (with mercury). Reddish-brown and volatile. Used in flame retardants, fumigants, and photography. Toxic and corrosive.",
+              physicsInfo: "Electron configuration: [Ar] 3d¹⁰ 4s² 4p⁵. Isotopes: ⁷⁹Br (50.69%), ⁸¹Br (49.31%). Atomic mass: 79.904 u. Shells: 2, 8, 18, 7.",
+              spectralLines: [{ wavelength: 470.5, intensity: 0.8, transition: "4p→4s" }, { wavelength: 478.6, intensity: 0.7, transition: "5s→4p" }]},
+            { symbol: "Kr", name: "Krypton", atomicNumber: 36, category: "noble-gas", row: 4, col: 18,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Forged in supernovae, used in high-performance lighting.",
+              chemistryInfo: "Noble gas, chemically inert. Forms very few compounds. Used in high-performance light bulbs, lasers, and flash lamps for high-speed photography. Produces bright white light when electrified.",
+              physicsInfo: "Electron configuration: [Ar] 3d¹⁰ 4s² 4p⁶. Isotopes: ⁸⁴Kr (56.99%), ⁸⁶Kr (17.28%), ⁸²Kr (11.59%), ⁸³Kr (11.50%), ⁸⁰Kr (2.29%), ⁷⁸Kr (0.35%). Atomic mass: 83.798 u. Shells: 2, 8, 18, 8.",
+              spectralLines: [{ wavelength: 557.0, intensity: 1.0, transition: "5p→5s" }, { wavelength: 587.1, intensity: 0.8, transition: "5p→5s" }]},
+            // Period 5
+            { symbol: "Rb", name: "Rubidium", atomicNumber: 37, category: "alkali-metal", row: 5, col: 1,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Created in supernovae, used in atomic clocks.",
+              chemistryInfo: "Highly reactive alkali metal, forms Rb⁺ ions. Ignites spontaneously in air. Used in atomic clocks, photocells, and research. Second most electropositive element after cesium.",
+              physicsInfo: "Electron configuration: [Kr] 5s¹. Isotopes: ⁸⁵Rb (72.17%), ⁸⁷Rb (27.83%, radioactive). Atomic mass: 85.468 u. Shells: 2, 8, 18, 8, 1.",
+              spectralLines: [{ wavelength: 780.0, intensity: 1.0, transition: "5p→5s" }, { wavelength: 794.8, intensity: 0.9, transition: "5p→5s" }]},
+            { symbol: "Sr", name: "Strontium", atomicNumber: 38, category: "alkaline-earth", row: 5, col: 2,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Forged in supernovae, gives fireworks their red color.",
+              chemistryInfo: "Alkaline earth metal, forms Sr²⁺ ions. Gives fireworks their brilliant red color. Chemically similar to calcium. Radioactive ⁹⁰Sr is a dangerous nuclear fallout product. Used in magnets and zinc refining.",
+              physicsInfo: "Electron configuration: [Kr] 5s². Isotopes: ⁸⁸Sr (82.58%), ⁸⁶Sr (9.86%), ⁸⁷Sr (7.00%), ⁸⁴Sr (0.56%). Atomic mass: 87.62 u. Shells: 2, 8, 18, 8, 2.",
+              spectralLines: [{ wavelength: 460.7, intensity: 1.0, transition: "5p→5s" }, { wavelength: 407.8, intensity: 0.7, transition: "6s→5p" }]},
+            { symbol: "Y", name: "Yttrium", atomicNumber: 39, category: "transition-metal", row: 5, col: 3,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Created in supernovae, used in LEDs and superconductors.",
+              chemistryInfo: "Transition metal, forms Y³⁺ ions. Used in LEDs, superconductors, and cancer treatment. Named after Ytterby, Sweden. Often found with lanthanides. Silvery-metallic and relatively stable in air.",
+              physicsInfo: "Electron configuration: [Kr] 4d¹ 5s². Isotope: ⁸⁹Y (100%). Atomic mass: 88.906 u. Shells: 2, 8, 18, 9, 2.",
+              spectralLines: [{ wavelength: 407.7, intensity: 0.9, transition: "4d→5s" }, { wavelength: 371.0, intensity: 0.7, transition: "5p→5s" }]},
+            { symbol: "Zr", name: "Zirconium", atomicNumber: 40, category: "transition-metal", row: 5, col: 4,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Produced in supernovae, extremely corrosion-resistant.",
+              chemistryInfo: "Transition metal, forms Zr⁴⁺ ions. Extremely corrosion-resistant. Used in nuclear reactors, surgical instruments, and gemstones (cubic zirconia). Does not absorb neutrons, making it ideal for nuclear applications.",
+              physicsInfo: "Electron configuration: [Kr] 4d² 5s². Isotopes: ⁹⁰Zr (51.45%), ⁹⁴Zr (17.38%), ⁹²Zr (17.15%), ⁹¹Zr (11.22%), ⁹⁶Zr (2.80%). Atomic mass: 91.224 u. Shells: 2, 8, 18, 10, 2.",
+              spectralLines: [{ wavelength: 360.1, intensity: 0.9, transition: "4d→5s" }, { wavelength: 349.6, intensity: 0.7, transition: "5p→4d" }]},
+            { symbol: "Nb", name: "Niobium", atomicNumber: 41, category: "transition-metal", row: 5, col: 5,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Forged in supernovae, used in superconducting magnets.",
+              chemistryInfo: "Transition metal, forms Nb³⁺ and Nb⁵⁺ ions. Used in superconducting magnets, steel alloys, and jewelry. Highly resistant to corrosion. Named after Niobe from Greek mythology.",
+              physicsInfo: "Electron configuration: [Kr] 4d⁴ 5s¹. Isotope: ⁹³Nb (100%). Atomic mass: 92.906 u. Shells: 2, 8, 18, 12, 1.",
+              spectralLines: [{ wavelength: 405.9, intensity: 0.8, transition: "4d→5s" }, { wavelength: 412.4, intensity: 0.7, transition: "5p→4d" }]},
+            { symbol: "Mo", name: "Molybdenum", atomicNumber: 42, category: "transition-metal", row: 5, col: 6,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Created in supernovae, essential for nitrogen-fixing enzymes.",
+              chemistryInfo: "Transition metal, forms Mo³⁺, Mo⁴⁺, Mo⁵⁺, and Mo⁶⁺ ions. Essential for nitrogen-fixing enzymes in bacteria. Used in steel alloys, catalysts, and lubricants. Has one of the highest melting points.",
+              physicsInfo: "Electron configuration: [Kr] 4d⁵ 5s¹. Isotopes: ⁹⁸Mo (24.39%), ⁹⁶Mo (16.67%), ⁹⁵Mo (15.84%), ⁹²Mo (14.53%), ¹⁰⁰Mo (9.82%), ⁹⁷Mo (9.60%), ⁹⁴Mo (9.15%). Atomic mass: 95.95 u. Shells: 2, 8, 18, 13, 1.",
+              spectralLines: [{ wavelength: 386.4, intensity: 1.0, transition: "4d→5s" }, { wavelength: 390.3, intensity: 0.8, transition: "5p→4d" }]},
+            { symbol: "Tc", name: "Technetium", atomicNumber: 43, category: "transition-metal", row: 5, col: 7,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "First artificially produced element, but also created in supernovae. All isotopes are radioactive.",
+              chemistryInfo: "Transition metal, forms Tc⁴⁺, Tc⁶⁺, and Tc⁷⁺ ions. First element artificially produced. All isotopes radioactive. Used in medical imaging (⁹⁹ᵐTc). Prevents corrosion of steel.",
+              physicsInfo: "Electron configuration: [Kr] 4d⁵ 5s². No stable isotopes. Most common: ⁹⁹Tc (half-life 211,000 years). Atomic mass: 98 u. Shells: 2, 8, 18, 13, 2.",
+              spectralLines: [{ wavelength: 403.2, intensity: 0.7, transition: "4d→5s" }, { wavelength: 426.2, intensity: 0.6, transition: "5p→4d" }]},
+            { symbol: "Ru", name: "Ruthenium", atomicNumber: 44, category: "transition-metal", row: 5, col: 8,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Produced in supernovae, used in electronics and catalysts.",
+              chemistryInfo: "Transition metal, forms Ru²⁺, Ru³⁺, and Ru⁴⁺ ions. Platinum group metal. Used in electrical contacts, chip resistors, and catalysts. Hardens platinum and palladium alloys.",
+              physicsInfo: "Electron configuration: [Kr] 4d⁷ 5s¹. Isotopes: ¹⁰²Ru (31.55%), ¹⁰⁴Ru (18.62%), ¹⁰¹Ru (17.06%), ⁹⁹Ru (12.76%), ¹⁰⁰Ru (12.60%), ⁹⁶Ru (5.54%), ⁹⁸Ru (1.87%). Atomic mass: 101.07 u. Shells: 2, 8, 18, 15, 1.",
+              spectralLines: [{ wavelength: 372.8, intensity: 0.9, transition: "4d→5s" }, { wavelength: 349.9, intensity: 0.7, transition: "5p→4d" }]},
+            { symbol: "Rh", name: "Rhodium", atomicNumber: 45, category: "transition-metal", row: 5, col: 9,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Forged in supernovae, one of the rarest and most valuable metals.",
+              chemistryInfo: "Transition metal, forms Rh³⁺ and Rh⁴⁺ ions. Platinum group metal. Extremely rare and valuable. Used in catalytic converters, jewelry plating, and industrial catalysts. Highly reflective.",
+              physicsInfo: "Electron configuration: [Kr] 4d⁸ 5s¹. Isotope: ¹⁰³Rh (100%). Atomic mass: 102.91 u. Shells: 2, 8, 18, 16, 1.",
+              spectralLines: [{ wavelength: 369.2, intensity: 1.0, transition: "4d→5s" }, { wavelength: 343.5, intensity: 0.8, transition: "5p→4d" }]},
+            { symbol: "Pd", name: "Palladium", atomicNumber: 46, category: "transition-metal", row: 5, col: 10,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Created in supernovae, used in catalytic converters.",
+              chemistryInfo: "Transition metal, forms Pd²⁺ and Pd⁴⁺ ions. Platinum group metal. Used in catalytic converters, electronics, dentistry, and jewelry. Can absorb up to 900 times its volume in hydrogen.",
+              physicsInfo: "Electron configuration: [Kr] 4d¹⁰. Isotopes: ¹⁰⁶Pd (27.33%), ¹⁰⁸Pd (26.46%), ¹⁰⁵Pd (22.33%), ¹¹⁰Pd (11.72%), ¹⁰⁴Pd (11.14%), ¹⁰²Pd (1.02%). Atomic mass: 106.42 u. Shells: 2, 8, 18, 18.",
+              spectralLines: [{ wavelength: 340.5, intensity: 1.0, transition: "5p→5s" }, { wavelength: 363.5, intensity: 0.7, transition: "5p→5s" }]},
+            { symbol: "Ag", name: "Silver", atomicNumber: 47, category: "transition-metal", row: 5, col: 11,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Produced in supernovae, the best conductor of electricity.",
+              chemistryInfo: "Transition metal, forms Ag⁺ ions. Best electrical and thermal conductor of all elements. Used in jewelry, coins, electronics, and photography. Antibacterial properties. Tarnishes in air forming Ag₂S.",
+              physicsInfo: "Electron configuration: [Kr] 4d¹⁰ 5s¹. Isotopes: ¹⁰⁷Ag (51.84%), ¹⁰⁹Ag (48.16%). Atomic mass: 107.87 u. Shells: 2, 8, 18, 18, 1.",
+              spectralLines: [{ wavelength: 328.1, intensity: 1.0, transition: "5p→5s" }, { wavelength: 338.3, intensity: 0.9, transition: "5p→5s" }]},
+            { symbol: "Cd", name: "Cadmium", atomicNumber: 48, category: "transition-metal", row: 5, col: 12,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Forged in supernovae, used in batteries and pigments.",
+              chemistryInfo: "Transition metal, forms Cd²⁺ ions. Soft, bluish-white metal. Used in rechargeable batteries, pigments, and coatings. Toxic to humans. Absorbs neutrons, used in nuclear reactor control rods.",
+              physicsInfo: "Electron configuration: [Kr] 4d¹⁰ 5s². Isotopes: ¹¹⁴Cd (28.73%), ¹¹²Cd (24.13%), ¹¹¹Cd (12.80%), ¹¹⁰Cd (12.51%), ¹¹³Cd (12.22%), ¹¹⁶Cd (7.49%), ¹⁰⁶Cd (1.25%), ¹⁰⁸Cd (0.89%). Atomic mass: 112.41 u. Shells: 2, 8, 18, 18, 2.",
+              spectralLines: [{ wavelength: 228.8, intensity: 1.0, transition: "5p→5s" }, { wavelength: 326.1, intensity: 0.7, transition: "6s→5p" }]},
+            { symbol: "In", name: "Indium", atomicNumber: 49, category: "metal", row: 5, col: 13,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Created in supernovae, used in touchscreens and solar panels.",
+              chemistryInfo: "Post-transition metal, forms In⁺ and In³⁺ ions. Soft and malleable. Used in touchscreens (ITO), solar panels, and LEDs. Named for its indigo spectral line. Very rare in Earth's crust.",
+              physicsInfo: "Electron configuration: [Kr] 4d¹⁰ 5s² 5p¹. Isotopes: ¹¹⁵In (95.71%, radioactive), ¹¹³In (4.29%). Atomic mass: 114.82 u. Shells: 2, 8, 18, 18, 3.",
+              spectralLines: [{ wavelength: 451.1, intensity: 1.0, transition: "5p→5s" }, { wavelength: 410.2, intensity: 0.8, transition: "6s→5p" }]},
+            { symbol: "Sn", name: "Tin", atomicNumber: 50, category: "metal", row: 5, col: 14,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Produced in supernovae, used since ancient times for bronze.",
+              chemistryInfo: "Post-transition metal, forms Sn²⁺ and Sn⁴⁺ ions. Used since ancient times in bronze (Cu+Sn). Used in solder, tin cans, and pewter. Malleable and corrosion-resistant. Has two allotropes (white and gray tin).",
+              physicsInfo: "Electron configuration: [Kr] 4d¹⁰ 5s² 5p². Isotopes: ¹²⁰Sn (32.58%), ¹¹⁸Sn (24.22%), ¹¹⁶Sn (14.54%), ¹¹⁹Sn (8.59%), ¹¹⁷Sn (7.68%), ¹²⁴Sn (5.79%), ¹²²Sn (4.63%), ¹¹²Sn (0.97%), ¹¹⁴Sn (0.66%), ¹¹⁵Sn (0.34%). Atomic mass: 118.71 u. Shells: 2, 8, 18, 18, 4.",
+              spectralLines: [{ wavelength: 284.0, intensity: 1.0, transition: "5p→5s" }, { wavelength: 317.5, intensity: 0.7, transition: "6s→5p" }]},
+            { symbol: "Sb", name: "Antimony", atomicNumber: 51, category: "metalloid", row: 5, col: 15,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Forged in supernovae, used in flame retardants and semiconductors.",
+              chemistryInfo: "Metalloid, forms Sb³⁺ and Sb⁵⁺ ions. Used in flame retardants, batteries, and semiconductors. Brittle and silvery. Known since ancient times. Toxic in large amounts.",
+              physicsInfo: "Electron configuration: [Kr] 4d¹⁰ 5s² 5p³. Isotopes: ¹²¹Sb (57.21%), ¹²³Sb (42.79%). Atomic mass: 121.76 u. Shells: 2, 8, 18, 18, 5.",
+              spectralLines: [{ wavelength: 259.8, intensity: 0.9, transition: "5p→5s" }, { wavelength: 252.9, intensity: 0.7, transition: "6s→5p" }]},
+            { symbol: "Te", name: "Tellurium", atomicNumber: 52, category: "metalloid", row: 5, col: 16,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Created in supernovae, used in solar panels and thermoelectrics.",
+              chemistryInfo: "Metalloid, forms Te²⁻, Te⁴⁺, and Te⁶⁺ ions. Used in solar panels, thermoelectric devices, and DVDs. Brittle and silvery-white. Gives garlic-like odor to breath when ingested.",
+              physicsInfo: "Electron configuration: [Kr] 4d¹⁰ 5s² 5p⁴. Isotopes: ¹³⁰Te (34.08%), ¹²⁸Te (31.74%), ¹²⁶Te (18.84%), ¹²⁵Te (7.07%), ¹²⁴Te (4.74%), ¹²²Te (2.55%), ¹²³Te (0.89%), ¹²⁰Te (0.09%). Atomic mass: 127.60 u. Shells: 2, 8, 18, 18, 6.",
+              spectralLines: [{ wavelength: 214.3, intensity: 0.9, transition: "5p→5s" }, { wavelength: 238.6, intensity: 0.7, transition: "6s→5p" }]},
+            { symbol: "I", name: "Iodine", atomicNumber: 53, category: "halogen", row: 5, col: 17,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Produced in supernovae, essential for thyroid hormones.",
+              chemistryInfo: "Halogen, forms I⁻ ions. Essential for thyroid hormones. Violet vapor when heated. Used in disinfectants, dyes, and photography. Found in seaweed and iodized salt. Deficiency causes goiter.",
+              physicsInfo: "Electron configuration: [Kr] 4d¹⁰ 5s² 5p⁵. Isotope: ¹²⁷I (100%). Atomic mass: 126.90 u. Shells: 2, 8, 18, 18, 7.",
+              spectralLines: [{ wavelength: 546.5, intensity: 0.8, transition: "5p→5s" }, { wavelength: 516.1, intensity: 0.6, transition: "6s→5p" }]},
+            { symbol: "Xe", name: "Xenon", atomicNumber: 54, category: "noble-gas", row: 5, col: 18,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Forged in supernovae, used in high-intensity lamps and anesthesia.",
+              chemistryInfo: "Noble gas, can form compounds (unlike lighter noble gases). Used in flash lamps, arc lamps, anesthesia, and ion propulsion. Produces brilliant white light. Extremely rare in Earth's atmosphere.",
+              physicsInfo: "Electron configuration: [Kr] 4d¹⁰ 5s² 5p⁶. Isotopes: ¹³²Xe (26.89%), ¹²⁹Xe (26.40%), ¹³¹Xe (21.23%), ¹³⁴Xe (10.44%), ¹³⁶Xe (8.86%), ¹³⁰Xe (4.07%), ¹²⁸Xe (1.91%), ¹²⁴Xe (0.10%), ¹²⁶Xe (0.09%). Atomic mass: 131.29 u. Shells: 2, 8, 18, 18, 8.",
+              spectralLines: [{ wavelength: 462.4, intensity: 1.0, transition: "6p→6s" }, { wavelength: 467.1, intensity: 0.8, transition: "6p→6s" }]},
+            // Period 6
+            { symbol: "Cs", name: "Cesium", atomicNumber: 55, category: "alkali-metal", row: 6, col: 1,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Created in supernovae, defines the second in atomic clocks.",
+              chemistryInfo: "Highly reactive alkali metal, forms Cs⁺ ions. Most electropositive element. Ignites spontaneously in air. Used in atomic clocks (defines the second), photoelectric cells, and drilling fluids. Soft and golden.",
+              physicsInfo: "Electron configuration: [Xe] 6s¹. Isotope: ¹³³Cs (100%). Atomic mass: 132.91 u. Shells: 2, 8, 18, 18, 8, 1.",
+              spectralLines: [{ wavelength: 852.1, intensity: 1.0, transition: "6p→6s" }, { wavelength: 894.3, intensity: 0.9, transition: "6p→6s" }]},
+            { symbol: "Ba", name: "Barium", atomicNumber: 56, category: "alkaline-earth", row: 6, col: 2,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Produced in supernovae, gives fireworks their green color.",
+              chemistryInfo: "Alkaline earth metal, forms Ba²⁺ ions. Gives fireworks their green color. Used in medical imaging (barium meals), drilling fluids, and glass. Reactive with water. Compounds are toxic except BaSO₄.",
+              physicsInfo: "Electron configuration: [Xe] 6s². Isotopes: ¹³⁸Ba (71.70%), ¹³⁷Ba (11.23%), ¹³⁶Ba (7.85%), ¹³⁵Ba (6.59%), ¹³⁴Ba (2.42%), ¹³⁰Ba (0.11%), ¹³²Ba (0.10%). Atomic mass: 137.33 u. Shells: 2, 8, 18, 18, 8, 2.",
+              spectralLines: [{ wavelength: 553.5, intensity: 1.0, transition: "6p→6s" }, { wavelength: 455.4, intensity: 0.8, transition: "7s→6p" }]},
+            { symbol: "Hf", name: "Hafnium", atomicNumber: 72, category: "transition-metal", row: 6, col: 4,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Forged in supernovae, used in nuclear reactors and microchips.",
+              chemistryInfo: "Transition metal, forms Hf⁴⁺ ions. Excellent neutron absorber used in nuclear reactor control rods. Used in microchips and superalloys. Chemically similar to zirconium. Very corrosion-resistant.",
+              physicsInfo: "Electron configuration: [Xe] 4f¹⁴ 5d² 6s². Isotopes: ¹⁸⁰Hf (35.08%), ¹⁷⁸Hf (27.28%), ¹⁷⁷Hf (18.60%), ¹⁷⁹Hf (13.62%), ¹⁷⁶Hf (5.26%), ¹⁷⁴Hf (0.16%). Atomic mass: 178.49 u. Shells: 2, 8, 18, 32, 10, 2.",
+              spectralLines: [{ wavelength: 368.2, intensity: 0.8, transition: "5d→6s" }, { wavelength: 339.9, intensity: 0.6, transition: "6p→5d" }]},
+            { symbol: "Ta", name: "Tantalum", atomicNumber: 73, category: "transition-metal", row: 6, col: 5,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Created in supernovae, extremely corrosion-resistant.",
+              chemistryInfo: "Transition metal, forms Ta⁵⁺ ions. Extremely corrosion-resistant, immune to most acids. Used in capacitors, surgical implants, and jet engines. Named after Tantalus from Greek mythology.",
+              physicsInfo: "Electron configuration: [Xe] 4f¹⁴ 5d³ 6s². Isotopes: ¹⁸¹Ta (99.988%), ¹⁸⁰Ta (0.012%, radioactive). Atomic mass: 180.95 u. Shells: 2, 8, 18, 32, 11, 2.",
+              spectralLines: [{ wavelength: 271.5, intensity: 0.9, transition: "5d→6s" }, { wavelength: 263.6, intensity: 0.7, transition: "6p→5d" }]},
+            { symbol: "W", name: "Tungsten", atomicNumber: 74, category: "transition-metal", row: 6, col: 6,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Produced in supernovae, has the highest melting point of all elements.",
+              chemistryInfo: "Transition metal, forms W⁴⁺ and W⁶⁺ ions. Highest melting point (3422°C) of all elements. Used in light bulb filaments, X-ray tubes, and armor-piercing ammunition. Extremely dense and hard.",
+              physicsInfo: "Electron configuration: [Xe] 4f¹⁴ 5d⁴ 6s². Isotopes: ¹⁸⁴W (30.64%), ¹⁸⁶W (28.43%), ¹⁸²W (26.50%), ¹⁸³W (14.31%), ¹⁸⁰W (0.12%). Atomic mass: 183.84 u. Shells: 2, 8, 18, 32, 12, 2.",
+              spectralLines: [{ wavelength: 400.9, intensity: 1.0, transition: "5d→6s" }, { wavelength: 429.5, intensity: 0.8, transition: "6p→5d" }]},
+            { symbol: "Re", name: "Rhenium", atomicNumber: 75, category: "transition-metal", row: 6, col: 7,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Forged in supernovae, one of the rarest elements in Earth's crust.",
+              chemistryInfo: "Transition metal, forms Re⁴⁺, Re⁶⁺, and Re⁷⁺ ions. One of the rarest elements in Earth's crust. Third highest melting point. Used in jet engine parts and catalysts. Named after the Rhine river.",
+              physicsInfo: "Electron configuration: [Xe] 4f¹⁴ 5d⁵ 6s². Isotopes: ¹⁸⁷Re (62.60%, radioactive), ¹⁸⁵Re (37.40%). Atomic mass: 186.21 u. Shells: 2, 8, 18, 32, 13, 2.",
+              spectralLines: [{ wavelength: 346.0, intensity: 0.9, transition: "5d→6s" }, { wavelength: 345.2, intensity: 0.8, transition: "6p→5d" }]},
+            { symbol: "Os", name: "Osmium", atomicNumber: 76, category: "transition-metal", row: 6, col: 8,
+              cosmicOrigin: "Merging Neutron Stars", originColor: "#FF4500",
+              astronomyInfo: "Created in neutron star collisions, the densest naturally occurring element.",
+              chemistryInfo: "Transition metal, forms Os⁴⁺ and Os⁸⁺ ions. Densest naturally occurring element (22.59 g/cm³). Platinum group metal. Used in fountain pen tips and electrical contacts. OsO₄ is highly toxic.",
+              physicsInfo: "Electron configuration: [Xe] 4f¹⁴ 5d⁶ 6s². Isotopes: ¹⁹²Os (40.78%), ¹⁹⁰Os (26.26%), ¹⁸⁹Os (16.15%), ¹⁸⁸Os (13.24%), ¹⁸⁷Os (1.96%), ¹⁸⁶Os (1.59%), ¹⁸⁴Os (0.02%). Atomic mass: 190.23 u. Shells: 2, 8, 18, 32, 14, 2.",
+              spectralLines: [{ wavelength: 330.2, intensity: 0.8, transition: "5d→6s" }, { wavelength: 305.9, intensity: 0.7, transition: "6p→5d" }]},
+            { symbol: "Ir", name: "Iridium", atomicNumber: 77, category: "transition-metal", row: 6, col: 9,
+              cosmicOrigin: "Merging Neutron Stars", originColor: "#FF4500",
+              astronomyInfo: "Forged in neutron star collisions, found in the asteroid impact layer that killed the dinosaurs.",
+              chemistryInfo: "Transition metal, forms Ir³⁺ and Ir⁴⁺ ions. Second densest element. Most corrosion-resistant metal. Platinum group metal. Found in the K-T boundary layer from the dinosaur-killing asteroid impact.",
+              physicsInfo: "Electron configuration: [Xe] 4f¹⁴ 5d⁷ 6s². Isotopes: ¹⁹³Ir (62.7%), ¹⁹¹Ir (37.3%). Atomic mass: 192.22 u. Shells: 2, 8, 18, 32, 15, 2.",
+              spectralLines: [{ wavelength: 380.0, intensity: 0.9, transition: "5d→6s" }, { wavelength: 322.1, intensity: 0.7, transition: "6p→5d" }]},
+            { symbol: "Pt", name: "Platinum", atomicNumber: 78, category: "transition-metal", row: 6, col: 10,
+              cosmicOrigin: "Merging Neutron Stars", originColor: "#FF4500",
+              astronomyInfo: "Created in neutron star collisions, extremely rare and valuable.",
+              chemistryInfo: "Transition metal, forms Pt²⁺ and Pt⁴⁺ ions. Platinum group metal. Extremely rare and valuable. Used in catalytic converters, jewelry, laboratory equipment, and cancer drugs (cisplatin). Highly unreactive.",
+              physicsInfo: "Electron configuration: [Xe] 4f¹⁴ 5d⁹ 6s¹. Isotopes: ¹⁹⁵Pt (33.83%), ¹⁹⁴Pt (32.97%), ¹⁹⁶Pt (25.24%), ¹⁹⁸Pt (7.16%), ¹⁹²Pt (0.78%), ¹⁹⁰Pt (0.01%). Atomic mass: 195.08 u. Shells: 2, 8, 18, 32, 17, 1.",
+              spectralLines: [{ wavelength: 265.9, intensity: 1.0, transition: "6p→6s" }, { wavelength: 299.8, intensity: 0.8, transition: "6p→6s" }]},
+            { symbol: "Hg", name: "Mercury", atomicNumber: 80, category: "transition-metal", row: 6, col: 12,
+              cosmicOrigin: "Merging Neutron Stars", originColor: "#FF4500",
+              astronomyInfo: "Produced in neutron star collisions, the only metal that's liquid at room temperature.",
+              chemistryInfo: "Transition metal, forms Hg⁺ and Hg²⁺ ions. Only metal liquid at room temperature. Used in thermometers, barometers, fluorescent lights, and dental amalgams. Highly toxic, especially as vapor and methylmercury.",
+              physicsInfo: "Electron configuration: [Xe] 4f¹⁴ 5d¹⁰ 6s². Isotopes: ²⁰²Hg (29.86%), ²⁰⁰Hg (23.10%), ¹⁹⁹Hg (16.87%), ²⁰¹Hg (13.18%), ¹⁹⁸Hg (9.97%), ²⁰⁴Hg (6.87%), ¹⁹⁶Hg (0.15%). Atomic mass: 200.59 u. Shells: 2, 8, 18, 32, 18, 2.",
+              spectralLines: [{ wavelength: 253.7, intensity: 1.0, transition: "6p→6s" }, { wavelength: 365.0, intensity: 0.7, transition: "7s→6p" }]},
+            { symbol: "Tl", name: "Thallium", atomicNumber: 81, category: "metal", row: 6, col: 13,
+              cosmicOrigin: "Merging Neutron Stars", originColor: "#FF4500",
+              astronomyInfo: "Forged in neutron star collisions, highly toxic but used in medical imaging.",
+              chemistryInfo: "Post-transition metal, forms Tl⁺ and Tl³⁺ ions. Soft and malleable. Highly toxic (used as rat poison). Used in medical imaging, electronics, and infrared detectors. Named for its bright green spectral line (thallos = green twig).",
+              physicsInfo: "Electron configuration: [Xe] 4f¹⁴ 5d¹⁰ 6s² 6p¹. Isotopes: ²⁰⁵Tl (70.48%), ²⁰³Tl (29.52%). Atomic mass: 204.38 u. Shells: 2, 8, 18, 32, 18, 3.",
+              spectralLines: [{ wavelength: 535.0, intensity: 1.0, transition: "6p→6s" }, { wavelength: 377.6, intensity: 0.7, transition: "7s→6p" }]},
+            { symbol: "Pb", name: "Lead", atomicNumber: 82, category: "metal", row: 6, col: 14,
+              cosmicOrigin: "Merging Neutron Stars", originColor: "#FF4500",
+              astronomyInfo: "Created in neutron star collisions, the final stable element in the periodic table.",
+              spectralLines: [{ wavelength: 405.8, intensity: 1.0 }, { wavelength: 368.3, intensity: 0.8 }]},
+            { symbol: "Bi", name: "Bismuth", atomicNumber: 83, category: "metal", row: 6, col: 15,
+              cosmicOrigin: "Merging Neutron Stars", originColor: "#FF4500",
+              astronomyInfo: "Produced in neutron star collisions, the most diamagnetic element.",
+              spectralLines: [{ wavelength: 306.8, intensity: 0.9 }, { wavelength: 289.8, intensity: 0.7 }]},
+            { symbol: "Pb", name: "Lead", atomicNumber: 82, category: "metal", row: 6, col: 14,
+              cosmicOrigin: "Merging Neutron Stars", originColor: "#FF4500",
+              astronomyInfo: "Created in neutron star collisions, the final stable element in the periodic table.",
+              chemistryInfo: "Post-transition metal, forms Pb²⁺ and Pb⁴⁺ ions. Heaviest stable element. Soft, malleable, and dense. Used in batteries, radiation shielding, and historically in pipes and paint. Toxic, especially to children.",
+              physicsInfo: "Electron configuration: [Xe] 4f¹⁴ 5d¹⁰ 6s² 6p². Isotopes: ²⁰⁸Pb (52.4%), ²⁰⁶Pb (24.1%), ²⁰⁷Pb (22.1%), ²⁰⁴Pb (1.4%). Atomic mass: 207.2 u. Shells: 2, 8, 18, 32, 18, 4.",
+              spectralLines: [{ wavelength: 405.8, intensity: 1.0, transition: "6p→6s" }, { wavelength: 368.3, intensity: 0.8, transition: "7s→6p" }]},
+            { symbol: "Bi", name: "Bismuth", atomicNumber: 83, category: "metal", row: 6, col: 15,
+              cosmicOrigin: "Merging Neutron Stars", originColor: "#FF4500",
+              astronomyInfo: "Produced in neutron star collisions, forms beautiful iridescent oxide crystals.",
+              chemistryInfo: "Post-transition metal, forms Bi³⁺ and Bi⁵⁺ ions. Brittle with iridescent oxide layer. Used in cosmetics, medicines (Pepto-Bismol), and low-melting alloys. Least toxic of heavy metals. Diamagnetic.",
+              physicsInfo: "Electron configuration: [Xe] 4f¹⁴ 5d¹⁰ 6s² 6p³. Isotope: ²⁰⁹Bi (100%, very slightly radioactive). Atomic mass: 208.98 u. Shells: 2, 8, 18, 32, 18, 5.",
+              spectralLines: [{ wavelength: 306.8, intensity: 0.9, transition: "6p→6s" }, { wavelength: 289.8, intensity: 0.7, transition: "7s→6p" }]},
+            { symbol: "Po", name: "Polonium", atomicNumber: 84, category: "metalloid", row: 6, col: 16,
+              cosmicOrigin: "Merging Neutron Stars", originColor: "#FF4500",
+              astronomyInfo: "Forged in neutron star collisions, discovered by Marie Curie, highly radioactive.",
+              chemistryInfo: "Metalloid, forms Po²⁺ and Po⁴⁺ ions. Highly radioactive and toxic. Discovered by Marie Curie, named after Poland. Used in antistatic devices and as heat source in space probes. All isotopes radioactive.",
+              physicsInfo: "Electron configuration: [Xe] 4f¹⁴ 5d¹⁰ 6s² 6p⁴. No stable isotopes. Most common: ²⁰⁹Po (half-life 102 years). Atomic mass: 209 u. Shells: 2, 8, 18, 32, 18, 6.",
+              spectralLines: [{ wavelength: 300.3, intensity: 0.7, transition: "6p→6s" }, { wavelength: 255.8, intensity: 0.5, transition: "7s→6p" }]},
+            { symbol: "At", name: "Astatine", atomicNumber: 85, category: "halogen", row: 6, col: 17,
+              cosmicOrigin: "Merging Neutron Stars", originColor: "#FF4500",
+              astronomyInfo: "Created in neutron star collisions, the rarest naturally occurring element on Earth.",
+              chemistryInfo: "Halogen, forms At⁻ ions. Rarest naturally occurring element on Earth (less than 1 gram in Earth's crust). All isotopes radioactive. Properties similar to iodine. Used in cancer treatment research.",
+              physicsInfo: "Electron configuration: [Xe] 4f¹⁴ 5d¹⁰ 6s² 6p⁵. No stable isotopes. Most stable: ²¹⁰At (half-life 8.1 hours). Atomic mass: 210 u. Shells: 2, 8, 18, 32, 18, 7.",
+              spectralLines: [{ wavelength: 224.4, intensity: 0.6, transition: "6p→6s" }, { wavelength: 216.2, intensity: 0.5, transition: "7s→6p" }]},
+            { symbol: "Rn", name: "Radon", atomicNumber: 86, category: "noble-gas", row: 6, col: 18,
+              cosmicOrigin: "Merging Neutron Stars", originColor: "#FF4500",
+              astronomyInfo: "Produced in neutron star collisions, radioactive noble gas found in basements.",
+              chemistryInfo: "Noble gas, can form compounds. Radioactive decay product of radium. Colorless, odorless, and tasteless. Accumulates in basements, second leading cause of lung cancer. All isotopes radioactive.",
+              physicsInfo: "Electron configuration: [Xe] 4f¹⁴ 5d¹⁰ 6s² 6p⁶. No stable isotopes. Most stable: ²²²Rn (half-life 3.8 days). Atomic mass: 222 u. Shells: 2, 8, 18, 32, 18, 8.",
+              spectralLines: [{ wavelength: 435.0, intensity: 0.7, transition: "7p→7s" }, { wavelength: 745.0, intensity: 0.6, transition: "7p→7s" }]},
+            // Period 7
+            { symbol: "Fr", name: "Francium", atomicNumber: 87, category: "alkali-metal", row: 7, col: 1,
+              cosmicOrigin: "Merging Neutron Stars", originColor: "#FF4500",
+              astronomyInfo: "Forged in neutron star collisions, extremely rare and radioactive.",
+              chemistryInfo: "Highly reactive alkali metal, forms Fr⁺ ions. Most unstable of first 101 elements. Extremely rare (less than 30 grams in Earth's crust at any time). All isotopes radioactive. Would be liquid at room temperature.",
+              physicsInfo: "Electron configuration: [Rn] 7s¹. No stable isotopes. Most stable: ²²³Fr (half-life 22 minutes). Atomic mass: 223 u. Shells: 2, 8, 18, 32, 18, 8, 1.",
+              spectralLines: [{ wavelength: 718.0, intensity: 0.5, transition: "7p→7s" }, { wavelength: 817.0, intensity: 0.4, transition: "7p→7s" }]},
+            { symbol: "Ra", name: "Radium", atomicNumber: 88, category: "alkaline-earth", row: 7, col: 2,
+              cosmicOrigin: "Merging Neutron Stars", originColor: "#FF4500",
+              astronomyInfo: "Created in neutron star collisions, discovered by Marie Curie, glows in the dark.",
+              chemistryInfo: "Alkaline earth metal, forms Ra²⁺ ions. Discovered by Marie and Pierre Curie. Glows in the dark due to radioactivity. Used in early luminous paints (now banned). Highly radioactive and toxic. Decay product of uranium.",
+              physicsInfo: "Electron configuration: [Rn] 7s². No stable isotopes. Most stable: ²²⁶Ra (half-life 1600 years). Atomic mass: 226 u. Shells: 2, 8, 18, 32, 18, 8, 2.",
+              spectralLines: [{ wavelength: 381.4, intensity: 0.7, transition: "7p→7s" }, { wavelength: 468.2, intensity: 0.6, transition: "8s→7p" }]},
+            { symbol: "Rf", name: "Rutherfordium", atomicNumber: 104, category: "transition-metal", row: 7, col: 4,
+              cosmicOrigin: "Synthetic", originColor: "#808080",
+              astronomyInfo: "Synthetic element created in laboratories, does not occur naturally.",
+              chemistryInfo: "Synthetic transition metal. Created by bombarding californium with carbon ions. Extremely radioactive. Only a few atoms produced at a time. Properties predicted to be similar to hafnium.",
+              physicsInfo: "Electron configuration: [Rn] 5f¹⁴ 6d² 7s². No stable isotopes. Most stable: ²⁶⁷Rf (half-life 1.3 hours). Atomic mass: 267 u.",
+              spectralLines: [{ wavelength: 350.0, intensity: 0.3, transition: "6d→7s" }]},
+            { symbol: "Db", name: "Dubnium", atomicNumber: 105, category: "transition-metal", row: 7, col: 5,
+              cosmicOrigin: "Synthetic", originColor: "#808080",
+              astronomyInfo: "Synthetic element, named after Dubna, Russia.",
+              chemistryInfo: "Synthetic transition metal. Named after Dubna, Russia where it was discovered. Extremely radioactive. Properties predicted to be similar to tantalum. Only produced in particle accelerators.",
+              physicsInfo: "Electron configuration: [Rn] 5f¹⁴ 6d³ 7s². No stable isotopes. Most stable: ²⁶⁸Db (half-life 28 hours). Atomic mass: 268 u.",
+              spectralLines: [{ wavelength: 360.0, intensity: 0.3, transition: "6d→7s" }]},
+            { symbol: "Sg", name: "Seaborgium", atomicNumber: 106, category: "transition-metal", row: 7, col: 6,
+              cosmicOrigin: "Synthetic", originColor: "#808080",
+              astronomyInfo: "Synthetic element, named after Glenn Seaborg.",
+              chemistryInfo: "Synthetic transition metal. Named after Glenn Seaborg, Nobel laureate. Extremely radioactive. Properties predicted to be similar to tungsten. Only a few atoms ever produced.",
+              physicsInfo: "Electron configuration: [Rn] 5f¹⁴ 6d⁴ 7s². No stable isotopes. Most stable: ²⁶⁹Sg (half-life 14 minutes). Atomic mass: 269 u.",
+              spectralLines: [{ wavelength: 370.0, intensity: 0.3, transition: "6d→7s" }]},
+            { symbol: "Bh", name: "Bohrium", atomicNumber: 107, category: "transition-metal", row: 7, col: 7,
+              cosmicOrigin: "Synthetic", originColor: "#808080",
+              astronomyInfo: "Synthetic element, named after Niels Bohr.",
+              chemistryInfo: "Synthetic transition metal. Named after Niels Bohr, pioneer of atomic theory. Extremely radioactive. Properties predicted to be similar to rhenium. Produced one atom at a time.",
+              physicsInfo: "Electron configuration: [Rn] 5f¹⁴ 6d⁵ 7s². No stable isotopes. Most stable: ²⁷⁰Bh (half-life 61 seconds). Atomic mass: 270 u.",
+              spectralLines: [{ wavelength: 380.0, intensity: 0.3, transition: "6d→7s" }]},
+            { symbol: "Hs", name: "Hassium", atomicNumber: 108, category: "transition-metal", row: 7, col: 8,
+              cosmicOrigin: "Synthetic", originColor: "#808080",
+              astronomyInfo: "Synthetic element, named after the German state of Hesse.",
+              chemistryInfo: "Synthetic transition metal. Named after Hesse, Germany. Extremely radioactive. Properties predicted to be similar to osmium. Very few atoms ever produced.",
+              physicsInfo: "Electron configuration: [Rn] 5f¹⁴ 6d⁶ 7s². No stable isotopes. Most stable: ²⁷⁰Hs (half-life 10 seconds). Atomic mass: 270 u.",
+              spectralLines: [{ wavelength: 390.0, intensity: 0.3, transition: "6d→7s" }]},
+            { symbol: "Mt", name: "Meitnerium", atomicNumber: 109, category: "transition-metal", row: 7, col: 9,
+              cosmicOrigin: "Synthetic", originColor: "#808080",
+              astronomyInfo: "Synthetic element, named after Lise Meitner.",
+              chemistryInfo: "Synthetic transition metal. Named after Lise Meitner, physicist who discovered nuclear fission. Extremely radioactive. Properties predicted to be similar to iridium.",
+              physicsInfo: "Electron configuration: [Rn] 5f¹⁴ 6d⁷ 7s². No stable isotopes. Most stable: ²⁷⁸Mt (half-life 8 seconds). Atomic mass: 278 u.",
+              spectralLines: [{ wavelength: 400.0, intensity: 0.3, transition: "6d→7s" }]},
+            { symbol: "Ds", name: "Darmstadtium", atomicNumber: 110, category: "transition-metal", row: 7, col: 10,
+              cosmicOrigin: "Synthetic", originColor: "#808080",
+              astronomyInfo: "Synthetic element, named after Darmstadt, Germany.",
+              chemistryInfo: "Synthetic transition metal. Named after Darmstadt, Germany. Extremely radioactive. Properties predicted to be similar to platinum. Only a few atoms ever created.",
+              physicsInfo: "Electron configuration: [Rn] 5f¹⁴ 6d⁸ 7s². No stable isotopes. Most stable: ²⁸¹Ds (half-life 11 seconds). Atomic mass: 281 u.",
+              spectralLines: [{ wavelength: 410.0, intensity: 0.3, transition: "6d→7s" }]},
+            { symbol: "Rg", name: "Roentgenium", atomicNumber: 111, category: "transition-metal", row: 7, col: 11,
+              cosmicOrigin: "Synthetic", originColor: "#808080",
+              astronomyInfo: "Synthetic element, named after Wilhelm Röntgen.",
+              chemistryInfo: "Synthetic transition metal. Named after Wilhelm Röntgen, discoverer of X-rays. Extremely radioactive. Properties predicted to be similar to gold. Produced in particle accelerators.",
+              physicsInfo: "Electron configuration: [Rn] 5f¹⁴ 6d⁹ 7s². No stable isotopes. Most stable: ²⁸²Rg (half-life 2 minutes). Atomic mass: 282 u.",
+              spectralLines: [{ wavelength: 420.0, intensity: 0.3, transition: "6d→7s" }]},
+            { symbol: "Cn", name: "Copernicium", atomicNumber: 112, category: "transition-metal", row: 7, col: 12,
+              cosmicOrigin: "Synthetic", originColor: "#808080",
+              astronomyInfo: "Synthetic element, named after Nicolaus Copernicus.",
+              chemistryInfo: "Synthetic transition metal. Named after Nicolaus Copernicus, astronomer. Extremely radioactive. Properties predicted to be similar to mercury, possibly liquid or gas at room temperature.",
+              physicsInfo: "Electron configuration: [Rn] 5f¹⁴ 6d¹⁰ 7s². No stable isotopes. Most stable: ²⁸⁵Cn (half-life 29 seconds). Atomic mass: 285 u.",
+              spectralLines: [{ wavelength: 430.0, intensity: 0.3, transition: "7p→7s" }]},
+            { symbol: "Nh", name: "Nihonium", atomicNumber: 113, category: "metal", row: 7, col: 13,
+              cosmicOrigin: "Synthetic", originColor: "#808080",
+              astronomyInfo: "Synthetic element, named after Japan (Nihon).",
+              chemistryInfo: "Synthetic post-transition metal. Named after Japan (Nihon). Extremely radioactive. Properties predicted to be similar to thallium. First element synthesized in Asia.",
+              physicsInfo: "Electron configuration: [Rn] 5f¹⁴ 6d¹⁰ 7s² 7p¹. No stable isotopes. Most stable: ²⁸⁶Nh (half-life 10 seconds). Atomic mass: 286 u.",
+              spectralLines: [{ wavelength: 440.0, intensity: 0.3, transition: "7p→7s" }]},
+            { symbol: "Fl", name: "Flerovium", atomicNumber: 114, category: "metal", row: 7, col: 14,
+              cosmicOrigin: "Synthetic", originColor: "#808080",
+              astronomyInfo: "Synthetic element, named after Georgy Flyorov.",
+              chemistryInfo: "Synthetic post-transition metal. Named after Georgy Flyorov, physicist. Extremely radioactive. Properties predicted to be similar to lead. May be volatile like a noble gas.",
+              physicsInfo: "Electron configuration: [Rn] 5f¹⁴ 6d¹⁰ 7s² 7p². No stable isotopes. Most stable: ²⁸⁹Fl (half-life 2.6 seconds). Atomic mass: 289 u.",
+              spectralLines: [{ wavelength: 450.0, intensity: 0.3, transition: "7p→7s" }]},
+            { symbol: "Mc", name: "Moscovium", atomicNumber: 115, category: "metal", row: 7, col: 15,
+              cosmicOrigin: "Synthetic", originColor: "#808080",
+              astronomyInfo: "Synthetic element, named after Moscow, Russia.",
+              chemistryInfo: "Synthetic post-transition metal. Named after Moscow, Russia. Extremely radioactive. Properties predicted to be similar to bismuth. Produced by bombarding americium with calcium.",
+              physicsInfo: "Electron configuration: [Rn] 5f¹⁴ 6d¹⁰ 7s² 7p³. No stable isotopes. Most stable: ²⁹⁰Mc (half-life 0.65 seconds). Atomic mass: 290 u.",
+              spectralLines: [{ wavelength: 460.0, intensity: 0.3, transition: "7p→7s" }]},
+            { symbol: "Lv", name: "Livermorium", atomicNumber: 116, category: "metal", row: 7, col: 16,
+              cosmicOrigin: "Synthetic", originColor: "#808080",
+              astronomyInfo: "Synthetic element, named after Livermore, California.",
+              chemistryInfo: "Synthetic post-transition metal. Named after Lawrence Livermore National Laboratory. Extremely radioactive. Properties predicted to be similar to polonium. Very short-lived.",
+              physicsInfo: "Electron configuration: [Rn] 5f¹⁴ 6d¹⁰ 7s² 7p⁴. No stable isotopes. Most stable: ²⁹³Lv (half-life 61 milliseconds). Atomic mass: 293 u.",
+              spectralLines: [{ wavelength: 470.0, intensity: 0.3, transition: "7p→7s" }]},
+            { symbol: "Ts", name: "Tennessine", atomicNumber: 117, category: "halogen", row: 7, col: 17,
+              cosmicOrigin: "Synthetic", originColor: "#808080",
+              astronomyInfo: "Synthetic element, named after Tennessee, USA.",
+              chemistryInfo: "Synthetic halogen. Named after Tennessee, USA. Extremely radioactive. Properties predicted to be similar to astatine. Second-heaviest known element. May be metallic rather than halogen-like.",
+              physicsInfo: "Electron configuration: [Rn] 5f¹⁴ 6d¹⁰ 7s² 7p⁵. No stable isotopes. Most stable: ²⁹⁴Ts (half-life 51 milliseconds). Atomic mass: 294 u.",
+              spectralLines: [{ wavelength: 480.0, intensity: 0.3, transition: "7p→7s" }]},
+            { symbol: "Og", name: "Oganesson", atomicNumber: 118, category: "noble-gas", row: 7, col: 18,
+              cosmicOrigin: "Synthetic", originColor: "#808080",
+              astronomyInfo: "Synthetic element, named after Yuri Oganessian, completes the 7th period.",
+              chemistryInfo: "Synthetic noble gas. Named after Yuri Oganessian, nuclear physicist. Heaviest known element. Extremely radioactive. May be solid at room temperature due to relativistic effects, unlike other noble gases.",
+              physicsInfo: "Electron configuration: [Rn] 5f¹⁴ 6d¹⁰ 7s² 7p⁶. No stable isotopes. Most stable: ²⁹⁴Og (half-life 0.7 milliseconds). Atomic mass: 294 u.",
+              spectralLines: [{ wavelength: 490.0, intensity: 0.3, transition: "7p→7s" }]},
+            // Lanthanides
+            { symbol: "La", name: "Lanthanum", atomicNumber: 57, category: "lanthanide", row: 8, col: 3,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Created in supernovae, used in camera lenses and lighting.",
+              chemistryInfo: "Lanthanide, forms La³⁺ ions. Soft and malleable. Used in camera lenses, studio lighting, and hydrogen storage. Tarnishes rapidly in air. First of the lanthanide series.",
+              physicsInfo: "Electron configuration: [Xe] 5d¹ 6s². Isotopes: ¹³⁹La (99.91%), ¹³⁸La (0.09%, radioactive). Atomic mass: 138.91 u. Shells: 2, 8, 18, 18, 9, 2.",
+              spectralLines: [{ wavelength: 550.1, intensity: 0.9, transition: "5d→6s" }, { wavelength: 394.9, intensity: 0.7, transition: "6p→5d" }]},
+            { symbol: "Ce", name: "Cerium", atomicNumber: 58, category: "lanthanide", row: 8, col: 4,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Produced in supernovae, most abundant rare earth element.",
+              chemistryInfo: "Lanthanide, forms Ce³⁺ and Ce⁴⁺ ions. Most abundant rare earth element. Used in catalytic converters, self-cleaning ovens, and glass polishing. Ignites when scratched.",
+              physicsInfo: "Electron configuration: [Xe] 4f¹ 5d¹ 6s². Isotopes: ¹⁴⁰Ce (88.45%), ¹⁴²Ce (11.11%), ¹³⁸Ce (0.25%), ¹³⁶Ce (0.19%). Atomic mass: 140.12 u. Shells: 2, 8, 18, 19, 9, 2.",
+              spectralLines: [{ wavelength: 569.9, intensity: 0.8, transition: "4f→5d" }, { wavelength: 413.4, intensity: 0.6, transition: "6p→5d" }]},
+            { symbol: "Pr", name: "Praseodymium", atomicNumber: 59, category: "lanthanide", row: 8, col: 5,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Forged in supernovae, gives protective goggles their color.",
+              chemistryInfo: "Lanthanide, forms Pr³⁺ and Pr⁴⁺ ions. Used in welders' goggles, magnets, and lighter flints. Forms green salts. Tarnishes slowly in air.",
+              physicsInfo: "Electron configuration: [Xe] 4f³ 6s². Isotope: ¹⁴¹Pr (100%). Atomic mass: 140.91 u. Shells: 2, 8, 18, 21, 8, 2.",
+              spectralLines: [{ wavelength: 495.1, intensity: 0.8, transition: "4f→6s" }, { wavelength: 513.3, intensity: 0.7, transition: "6p→4f" }]},
+            { symbol: "Nd", name: "Neodymium", atomicNumber: 60, category: "lanthanide", row: 8, col: 6,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Created in supernovae, makes the strongest permanent magnets.",
+              chemistryInfo: "Lanthanide, forms Nd³⁺ ions. Makes the strongest permanent magnets (Nd₂Fe₁₄B). Used in hard drives, headphones, and electric motors. Colors glass purple.",
+              physicsInfo: "Electron configuration: [Xe] 4f⁴ 6s². Isotopes: ¹⁴²Nd (27.2%), ¹⁴⁴Nd (23.8%), ¹⁴⁶Nd (17.2%), ¹⁴³Nd (12.2%), ¹⁴⁵Nd (8.3%), ¹⁴⁸Nd (5.7%), ¹⁵⁰Nd (5.6%). Atomic mass: 144.24 u. Shells: 2, 8, 18, 22, 8, 2.",
+              spectralLines: [{ wavelength: 492.5, intensity: 0.9, transition: "4f→6s" }, { wavelength: 463.4, intensity: 0.7, transition: "6p→4f" }]},
+            { symbol: "Pm", name: "Promethium", atomicNumber: 61, category: "lanthanide", row: 8, col: 7,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Produced in supernovae, all isotopes are radioactive.",
+              chemistryInfo: "Lanthanide, forms Pm³⁺ ions. Only radioactive rare earth element. Used in luminous paint and atomic batteries. All isotopes radioactive. Named after Prometheus.",
+              physicsInfo: "Electron configuration: [Xe] 4f⁵ 6s². No stable isotopes. Most stable: ¹⁴⁵Pm (half-life 17.7 years). Atomic mass: 145 u. Shells: 2, 8, 18, 23, 8, 2.",
+              spectralLines: [{ wavelength: 468.0, intensity: 0.6, transition: "4f→6s" }, { wavelength: 441.0, intensity: 0.5, transition: "6p→4f" }]},
+            { symbol: "Sm", name: "Samarium", atomicNumber: 62, category: "lanthanide", row: 8, col: 8,
+              cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
+              astronomyInfo: "Forged in supernovae, used in powerful magnets and cancer treatment.",
+              chemistryInfo: "Lanthanide, forms Sm²⁺ and Sm³⁺ ions. Used in powerful magnets, cancer treatment, and nuclear reactors. Ignites at 150°C. Named after mineral samarskite.",
+              physicsInfo: "Electron configuration: [Xe] 4f⁶ 6s². Isotopes: ¹⁵²Sm (26.75%), ¹⁵⁴Sm (22.75%), ¹⁴⁷Sm (14.99%), ¹⁴⁹Sm (13.82%), ¹⁴⁸Sm (11.24%), ¹⁵⁰Sm (7.38%), ¹⁴⁴Sm (3.07%). Atomic mass: 150.36 u. Shells: 2, 8, 18, 24, 8, 2.",
+              spectralLines: [{ wavelength: 476.0, intensity: 0.8, transition: "4f→6s" }, { wavelength: 428.1, intensity: 0.6, transition: "6p→4f" }]},
+            { symbol: "Eu", name: "Europium", atomicNumber: 63, category: "lanthanide", row: 8, col: 9,
+              cosmicOrigin: "Merging Neutron Stars", originColor: "#FF4500",
+              astronomyInfo: "Created in neutron star collisions, used in euro banknote anti-counterfeiting.",
+              chemistryInfo: "Lanthanide, forms Eu²⁺ and Eu³⁺ ions. Most reactive rare earth element. Used in euro banknotes (anti-counterfeiting), TV screens, and LEDs. Named after Europe.",
+              physicsInfo: "Electron configuration: [Xe] 4f⁷ 6s². Isotopes: ¹⁵³Eu (52.19%), ¹⁵¹Eu (47.81%). Atomic mass: 151.96 u. Shells: 2, 8, 18, 25, 8, 2.",
+              spectralLines: [{ wavelength: 459.4, intensity: 1.0, transition: "4f→6s" }, { wavelength: 466.2, intensity: 0.8, transition: "6p→4f" }]},
+            { symbol: "Gd", name: "Gadolinium", atomicNumber: 64, category: "lanthanide", row: 8, col: 10,
+              cosmicOrigin: "Merging Neutron Stars", originColor: "#FF4500",
+              astronomyInfo: "Produced in neutron star collisions, used in MRI contrast agents.",
+              chemistryInfo: "Lanthanide, forms Gd³⁺ ions. Used in MRI contrast agents, neutron radiography, and magnets. Ferromagnetic below 20°C. Named after Johan Gadolin.",
+              physicsInfo: "Electron configuration: [Xe] 4f⁷ 5d¹ 6s². Isotopes: ¹⁵⁸Gd (24.84%), ¹⁶⁰Gd (21.86%), ¹⁵⁶Gd (20.47%), ¹⁵⁷Gd (15.65%), ¹⁵⁵Gd (14.80%), ¹⁵⁴Gd (2.18%), ¹⁵²Gd (0.20%). Atomic mass: 157.25 u. Shells: 2, 8, 18, 25, 9, 2.",
+              spectralLines: [{ wavelength: 440.2, intensity: 0.8, transition: "4f→6s" }, { wavelength: 407.9, intensity: 0.7, transition: "6p→4f" }]},
+            { symbol: "Tb", name: "Terbium", atomicNumber: 65, category: "lanthanide", row: 8, col: 11,
+              cosmicOrigin: "Merging Neutron Stars", originColor: "#FF4500",
+              astronomyInfo: "Forged in neutron star collisions, used in green phosphors.",
+              chemistryInfo: "Lanthanide, forms Tb³⁺ and Tb⁴⁺ ions. Used in green phosphors for fluorescent lamps and TV tubes. Magnetostrictive (changes shape in magnetic fields). Named after Ytterby, Sweden.",
+              physicsInfo: "Electron configuration: [Xe] 4f⁹ 6s². Isotope: ¹⁵⁹Tb (100%). Atomic mass: 158.93 u. Shells: 2, 8, 18, 27, 8, 2.",
+              spectralLines: [{ wavelength: 432.6, intensity: 0.9, transition: "4f→6s" }, { wavelength: 350.9, intensity: 0.7, transition: "6p→4f" }]},
+            { symbol: "Dy", name: "Dysprosium", atomicNumber: 66, category: "lanthanide", row: 8, col: 12,
+              cosmicOrigin: "Merging Neutron Stars", originColor: "#FF4500",
+              astronomyInfo: "Created in neutron star collisions, used in high-performance magnets.",
+              chemistryInfo: "Lanthanide, forms Dy³⁺ ions. Used in high-performance magnets, lasers, and nuclear reactors. Soft and silvery. Name means 'hard to get' in Greek.",
+              physicsInfo: "Electron configuration: [Xe] 4f¹⁰ 6s². Isotopes: ¹⁶⁴Dy (28.18%), ¹⁶²Dy (25.51%), ¹⁶³Dy (24.90%), ¹⁶¹Dy (18.91%), ¹⁶⁰Dy (2.33%), ¹⁵⁸Dy (0.10%), ¹⁵⁶Dy (0.06%). Atomic mass: 162.50 u. Shells: 2, 8, 18, 28, 8, 2.",
+              spectralLines: [{ wavelength: 421.2, intensity: 0.8, transition: "4f→6s" }, { wavelength: 404.6, intensity: 0.7, transition: "6p→4f" }]},
+            { symbol: "Ho", name: "Holmium", atomicNumber: 67, category: "lanthanide", row: 8, col: 13,
+              cosmicOrigin: "Merging Neutron Stars", originColor: "#FF4500",
+              astronomyInfo: "Produced in neutron star collisions, has the highest magnetic strength.",
+              chemistryInfo: "Lanthanide, forms Ho³⁺ ions. Has the highest magnetic strength of any element. Used in lasers, magnets, and nuclear reactors. Named after Stockholm (Holmia in Latin).",
+              physicsInfo: "Electron configuration: [Xe] 4f¹¹ 6s². Isotope: ¹⁶⁵Ho (100%). Atomic mass: 164.93 u. Shells: 2, 8, 18, 29, 8, 2.",
+              spectralLines: [{ wavelength: 410.4, intensity: 0.8, transition: "4f→6s" }, { wavelength: 389.1, intensity: 0.6, transition: "6p→4f" }]},
+            { symbol: "Er", name: "Erbium", atomicNumber: 68, category: "lanthanide", row: 8, col: 14,
+              cosmicOrigin: "Merging Neutron Stars", originColor: "#FF4500",
+              astronomyInfo: "Forged in neutron star collisions, used in fiber optic amplifiers.",
+              chemistryInfo: "Lanthanide, forms Er³⁺ ions. Used in fiber optic amplifiers, lasers, and nuclear technology. Colors glass pink. Named after Ytterby, Sweden.",
+              physicsInfo: "Electron configuration: [Xe] 4f¹² 6s². Isotopes: ¹⁶⁶Er (33.50%), ¹⁶⁸Er (26.98%), ¹⁶⁷Er (22.87%), ¹⁷⁰Er (14.88%), ¹⁶⁴Er (1.56%), ¹⁶²Er (0.14%). Atomic mass: 167.26 u. Shells: 2, 8, 18, 30, 8, 2.",
+              spectralLines: [{ wavelength: 400.8, intensity: 0.9, transition: "4f→6s" }, { wavelength: 415.1, intensity: 0.7, transition: "6p→4f" }]},
+            { symbol: "Tm", name: "Thulium", atomicNumber: 69, category: "lanthanide", row: 8, col: 15,
+              cosmicOrigin: "Merging Neutron Stars", originColor: "#FF4500",
+              astronomyInfo: "Created in neutron star collisions, used in portable X-ray devices.",
+              chemistryInfo: "Lanthanide, forms Tm²⁺ and Tm³⁺ ions. Least abundant rare earth element. Used in portable X-ray devices, lasers, and arc lighting. Named after Thule (ancient name for Scandinavia).",
+              physicsInfo: "Electron configuration: [Xe] 4f¹³ 6s². Isotope: ¹⁶⁹Tm (100%). Atomic mass: 168.93 u. Shells: 2, 8, 18, 31, 8, 2.",
+              spectralLines: [{ wavelength: 371.8, intensity: 0.8, transition: "4f→6s" }, { wavelength: 409.4, intensity: 0.6, transition: "6p→4f" }]},
+            { symbol: "Yb", name: "Ytterbium", atomicNumber: 70, category: "lanthanide", row: 8, col: 16,
+              cosmicOrigin: "Merging Neutron Stars", originColor: "#FF4500",
+              astronomyInfo: "Produced in neutron star collisions, used in atomic clocks.",
+              chemistryInfo: "Lanthanide, forms Yb²⁺ and Yb³⁺ ions. Used in atomic clocks, lasers, and steel alloys. Soft and malleable. Named after Ytterby, Sweden.",
+              physicsInfo: "Electron configuration: [Xe] 4f¹⁴ 6s². Isotopes: ¹⁷⁴Yb (31.83%), ¹⁷²Yb (21.83%), ¹⁷³Yb (16.13%), ¹⁷¹Yb (14.28%), ¹⁷⁶Yb (12.76%), ¹⁷⁰Yb (3.04%), ¹⁶⁸Yb (0.13%). Atomic mass: 173.05 u. Shells: 2, 8, 18, 32, 8, 2.",
+              spectralLines: [{ wavelength: 398.8, intensity: 1.0, transition: "6p→6s" }, { wavelength: 555.6, intensity: 0.7, transition: "6p→6s" }]},
+            { symbol: "Lu", name: "Lutetium", atomicNumber: 71, category: "lanthanide", row: 8, col: 17,
+              cosmicOrigin: "Merging Neutron Stars", originColor: "#FF4500",
+              astronomyInfo: "Forged in neutron star collisions, the last lanthanide element.",
+              chemistryInfo: "Lanthanide, forms Lu³⁺ ions. Hardest and densest rare earth element. Used in catalysts, phosphors, and cancer treatment. Named after Lutetia (ancient name for Paris).",
+              physicsInfo: "Electron configuration: [Xe] 4f¹⁴ 5d¹ 6s². Isotopes: ¹⁷⁵Lu (97.41%), ¹⁷⁶Lu (2.59%, radioactive). Atomic mass: 174.97 u. Shells: 2, 8, 18, 32, 9, 2.",
+              spectralLines: [{ wavelength: 451.9, intensity: 0.8, transition: "5d→6s" }, { wavelength: 337.7, intensity: 0.6, transition: "6p→5d" }]},
+            // Actinides
+            { symbol: "Ac", name: "Actinium", atomicNumber: 89, category: "actinide", row: 9, col: 3,
+              cosmicOrigin: "Merging Neutron Stars", originColor: "#FF4500",
+              astronomyInfo: "Created in neutron star collisions, radioactive and glows blue in the dark.",
+              chemistryInfo: "Actinide, forms Ac³⁺ ions. Radioactive, glows blue in the dark. Used in radiation therapy. Extremely rare. Named from Greek 'aktinos' meaning ray.",
+              physicsInfo: "Electron configuration: [Rn] 6d¹ 7s². No stable isotopes. Most stable: ²²⁷Ac (half-life 21.8 years). Atomic mass: 227 u. Shells: 2, 8, 18, 32, 18, 9, 2.",
+              spectralLines: [{ wavelength: 417.0, intensity: 0.6, transition: "6d→7s" }, { wavelength: 438.0, intensity: 0.5, transition: "7p→6d" }]},
+            { symbol: "Th", name: "Thorium", atomicNumber: 90, category: "actinide", row: 9, col: 4,
+              cosmicOrigin: "Merging Neutron Stars", originColor: "#FF4500",
+              astronomyInfo: "Produced in neutron star collisions, potential future nuclear fuel.",
+              chemistryInfo: "Actinide, forms Th⁴⁺ ions. Radioactive but more abundant than uranium. Potential future nuclear fuel. Used in gas mantles and welding electrodes. Named after Thor.",
+              physicsInfo: "Electron configuration: [Rn] 6d² 7s². Isotope: ²³²Th (100%, radioactive, half-life 14 billion years). Atomic mass: 232.04 u. Shells: 2, 8, 18, 32, 18, 10, 2.",
+              spectralLines: [{ wavelength: 401.9, intensity: 0.8, transition: "6d→7s" }, { wavelength: 283.7, intensity: 0.6, transition: "7p→6d" }]},
+            { symbol: "Pa", name: "Protactinium", atomicNumber: 91, category: "actinide", row: 9, col: 5,
+              cosmicOrigin: "Merging Neutron Stars", originColor: "#FF4500",
+              astronomyInfo: "Forged in neutron star collisions, highly radioactive and rare.",
+              chemistryInfo: "Actinide, forms Pa⁴⁺ and Pa⁵⁺ ions. Highly radioactive and toxic. Extremely rare. No practical applications. Name means 'before actinium' (parent of actinium).",
+              physicsInfo: "Electron configuration: [Rn] 5f² 6d¹ 7s². Isotope: ²³¹Pa (100%, radioactive, half-life 32,760 years). Atomic mass: 231.04 u. Shells: 2, 8, 18, 32, 20, 9, 2.",
+              spectralLines: [{ wavelength: 392.0, intensity: 0.6, transition: "5f→7s" }, { wavelength: 405.0, intensity: 0.5, transition: "7p→5f" }]},
+            { symbol: "U", name: "Uranium", atomicNumber: 92, category: "actinide", row: 9, col: 6,
+              cosmicOrigin: "Merging Neutron Stars", originColor: "#FF4500",
+              astronomyInfo: "Created in neutron star collisions, powers nuclear reactors and was formed before Earth.",
+              chemistryInfo: "Actinide, forms U³⁺, U⁴⁺, U⁵⁺, and U⁶⁺ ions. Powers nuclear reactors and weapons. Naturally radioactive. Used in dating rocks. Depleted uranium used in armor and ammunition. Named after Uranus.",
+              physicsInfo: "Electron configuration: [Rn] 5f³ 6d¹ 7s². Isotopes: ²³⁸U (99.27%, half-life 4.5 billion years), ²³⁵U (0.72%, half-life 704 million years), ²³⁴U (0.01%). Atomic mass: 238.03 u. Shells: 2, 8, 18, 32, 21, 9, 2.",
+              spectralLines: [{ wavelength: 591.5, intensity: 0.8, transition: "5f→7s" }, { wavelength: 424.4, intensity: 0.7, transition: "7p→5f" }]},
+            { symbol: "Np", name: "Neptunium", atomicNumber: 93, category: "actinide", row: 9, col: 7,
+              cosmicOrigin: "Synthetic", originColor: "#808080",
+              astronomyInfo: "First synthetic transuranium element, named after Neptune.",
+              chemistryInfo: "Synthetic actinide, forms Np³⁺, Np⁴⁺, Np⁵⁺, and Np⁶⁺ ions. First transuranium element discovered. Radioactive. Used in neutron detection. Named after Neptune.",
+              physicsInfo: "Electron configuration: [Rn] 5f⁴ 6d¹ 7s². No stable isotopes. Most stable: ²³⁷Np (half-life 2.1 million years). Atomic mass: 237 u. Shells: 2, 8, 18, 32, 22, 9, 2.",
+              spectralLines: [{ wavelength: 500.0, intensity: 0.4, transition: "5f→7s" }]},
+            { symbol: "Pu", name: "Plutonium", atomicNumber: 94, category: "actinide", row: 9, col: 8,
+              cosmicOrigin: "Synthetic", originColor: "#808080",
+              astronomyInfo: "Synthetic element, used in nuclear weapons and spacecraft power.",
+              chemistryInfo: "Synthetic actinide, forms Pu³⁺, Pu⁴⁺, Pu⁵⁺, and Pu⁶⁺ ions. Used in nuclear weapons and spacecraft power (RTGs). Extremely toxic. Warm to touch due to radioactivity. Named after Pluto.",
+              physicsInfo: "Electron configuration: [Rn] 5f⁶ 7s². No stable isotopes. Most common: ²³⁹Pu (half-life 24,110 years). Atomic mass: 244 u. Shells: 2, 8, 18, 32, 24, 8, 2.",
+              spectralLines: [{ wavelength: 510.0, intensity: 0.4, transition: "5f→7s" }]},
+            { symbol: "Am", name: "Americium", atomicNumber: 95, category: "actinide", row: 9, col: 9,
+              cosmicOrigin: "Synthetic", originColor: "#808080",
+              astronomyInfo: "Synthetic element, used in smoke detectors.",
+              chemistryInfo: "Synthetic actinide, forms Am³⁺ and Am⁴⁺ ions. Used in smoke detectors (²⁴¹Am). Radioactive. Glows in the dark. Named after the Americas.",
+              physicsInfo: "Electron configuration: [Rn] 5f⁷ 7s². No stable isotopes. Most stable: ²⁴³Am (half-life 7,370 years). Atomic mass: 243 u. Shells: 2, 8, 18, 32, 25, 8, 2.",
+              spectralLines: [{ wavelength: 520.0, intensity: 0.4, transition: "5f→7s" }]},
+            { symbol: "Cm", name: "Curium", atomicNumber: 96, category: "actinide", row: 9, col: 10,
+              cosmicOrigin: "Synthetic", originColor: "#808080",
+              astronomyInfo: "Synthetic element, named after Marie and Pierre Curie.",
+              chemistryInfo: "Synthetic actinide, forms Cm³⁺ and Cm⁴⁺ ions. Named after Marie and Pierre Curie. Radioactive. Glows purple in the dark. Used in space missions as heat source.",
+              physicsInfo: "Electron configuration: [Rn] 5f⁷ 6d¹ 7s². No stable isotopes. Most stable: ²⁴⁷Cm (half-life 15.6 million years). Atomic mass: 247 u. Shells: 2, 8, 18, 32, 25, 9, 2.",
+              spectralLines: [{ wavelength: 530.0, intensity: 0.4, transition: "5f→7s" }]},
+            { symbol: "Bk", name: "Berkelium", atomicNumber: 97, category: "actinide", row: 9, col: 11,
+              cosmicOrigin: "Synthetic", originColor: "#808080",
+              astronomyInfo: "Synthetic element, named after Berkeley, California.",
+              chemistryInfo: "Synthetic actinide, forms Bk³⁺ and Bk⁴⁺ ions. Named after Berkeley, California. Radioactive. No practical applications. Produced in nuclear reactors.",
+              physicsInfo: "Electron configuration: [Rn] 5f⁹ 7s². No stable isotopes. Most stable: ²⁴⁷Bk (half-life 1,380 years). Atomic mass: 247 u. Shells: 2, 8, 18, 32, 27, 8, 2.",
+              spectralLines: [{ wavelength: 540.0, intensity: 0.3, transition: "5f→7s" }]},
+            { symbol: "Cf", name: "Californium", atomicNumber: 98, category: "actinide", row: 9, col: 12,
+              cosmicOrigin: "Synthetic", originColor: "#808080",
+              astronomyInfo: "Synthetic element, named after California.",
+              chemistryInfo: "Synthetic actinide, forms Cf³⁺ and Cf⁴⁺ ions. Named after California. Powerful neutron emitter used in cancer treatment and oil well logging. Extremely expensive.",
+              physicsInfo: "Electron configuration: [Rn] 5f¹⁰ 7s². No stable isotopes. Most stable: ²⁵¹Cf (half-life 898 years). Atomic mass: 251 u. Shells: 2, 8, 18, 32, 28, 8, 2.",
+              spectralLines: [{ wavelength: 550.0, intensity: 0.3, transition: "5f→7s" }]},
+            { symbol: "Es", name: "Einsteinium", atomicNumber: 99, category: "actinide", row: 9, col: 13,
+              cosmicOrigin: "Synthetic", originColor: "#808080",
+              astronomyInfo: "Synthetic element, named after Albert Einstein.",
+              chemistryInfo: "Synthetic actinide, forms Es³⁺ ions. Named after Albert Einstein. Radioactive. Discovered in debris from first hydrogen bomb test. No practical applications.",
+              physicsInfo: "Electron configuration: [Rn] 5f¹¹ 7s². No stable isotopes. Most stable: ²⁵²Es (half-life 471.7 days). Atomic mass: 252 u. Shells: 2, 8, 18, 32, 29, 8, 2.",
+              spectralLines: [{ wavelength: 560.0, intensity: 0.3, transition: "5f→7s" }]},
+            { symbol: "Fm", name: "Fermium", atomicNumber: 100, category: "actinide", row: 9, col: 14,
+              cosmicOrigin: "Synthetic", originColor: "#808080",
+              astronomyInfo: "Synthetic element, named after Enrico Fermi.",
+              chemistryInfo: "Synthetic actinide, forms Fm³⁺ ions. Named after Enrico Fermi. Radioactive. Discovered in debris from first hydrogen bomb test. No practical applications.",
+              physicsInfo: "Electron configuration: [Rn] 5f¹² 7s². No stable isotopes. Most stable: ²⁵⁷Fm (half-life 100.5 days). Atomic mass: 257 u. Shells: 2, 8, 18, 32, 30, 8, 2.",
+              spectralLines: [{ wavelength: 570.0, intensity: 0.3, transition: "5f→7s" }]},
+            { symbol: "Md", name: "Mendelevium", atomicNumber: 101, category: "actinide", row: 9, col: 15,
+              cosmicOrigin: "Synthetic", originColor: "#808080",
+              astronomyInfo: "Synthetic element, named after Dmitri Mendeleev.",
+              chemistryInfo: "Synthetic actinide, forms Md²⁺ and Md³⁺ ions. Named after Dmitri Mendeleev, creator of the periodic table. Radioactive. No practical applications.",
+              physicsInfo: "Electron configuration: [Rn] 5f¹³ 7s². No stable isotopes. Most stable: ²⁵⁸Md (half-life 51.5 days). Atomic mass: 258 u. Shells: 2, 8, 18, 32, 31, 8, 2.",
+              spectralLines: [{ wavelength: 580.0, intensity: 0.3, transition: "5f→7s" }]},
+            { symbol: "No", name: "Nobelium", atomicNumber: 102, category: "actinide", row: 9, col: 16,
+              cosmicOrigin: "Synthetic", originColor: "#808080",
+              astronomyInfo: "Synthetic element, named after Alfred Nobel.",
+              chemistryInfo: "Synthetic actinide, forms No²⁺ and No³⁺ ions. Named after Alfred Nobel. Radioactive. No practical applications. Only produced a few atoms at a time.",
+              physicsInfo: "Electron configuration: [Rn] 5f¹⁴ 7s². No stable isotopes. Most stable: ²⁵⁹No (half-life 58 minutes). Atomic mass: 259 u. Shells: 2, 8, 18, 32, 32, 8, 2.",
+              spectralLines: [{ wavelength: 590.0, intensity: 0.3, transition: "7p→7s" }]},
+            { symbol: "Lr", name: "Lawrencium", atomicNumber: 103, category: "actinide", row: 9, col: 17,
+              cosmicOrigin: "Synthetic", originColor: "#808080",
+              astronomyInfo: "Synthetic element, named after Ernest Lawrence.",
+              chemistryInfo: "Synthetic actinide, forms Lr³⁺ ions. Named after Ernest Lawrence, inventor of the cyclotron. Radioactive. Last actinide. No practical applications.",
+              physicsInfo: "Electron configuration: [Rn] 5f¹⁴ 7s² 7p¹. No stable isotopes. Most stable: ²⁶²Lr (half-life 3.6 hours). Atomic mass: 262 u. Shells: 2, 8, 18, 32, 32, 8, 3.",
+              spectralLines: [{ wavelength: 600.0, intensity: 0.3, transition: "7p→7s" }]}
+        ]};
+
+        const ELEMENT_LAYOUT = {
+            "H": { row: 1, column: 1 }, "He": { row: 1, column: 18 },
+            "Li": { row: 2, column: 1 }, "Be": { row: 2, column: 2 }, "B": { row: 2, column: 13 }, "C": { row: 2, column: 14 },
+            "N": { row: 2, column: 15 }, "O": { row: 2, column: 16 }, "F": { row: 2, column: 17 }, "Ne": { row: 2, column: 18 },
+            "Na": { row: 3, column: 1 }, "Mg": { row: 3, column: 2 }, "Al": { row: 3, column: 13 }, "Si": { row: 3, column: 14 },
+            "P": { row: 3, column: 15 }, "S": { row: 3, column: 16 }, "Cl": { row: 3, column: 17 }, "Ar": { row: 3, column: 18 },
+            "K": { row: 4, column: 1 }, "Ca": { row: 4, column: 2 }, "Sc": { row: 4, column: 3 }, "Ti": { row: 4, column: 4 },
+            "V": { row: 4, column: 5 }, "Cr": { row: 4, column: 6 }, "Mn": { row: 4, column: 7 }, "Fe": { row: 4, column: 8 },
+            "Co": { row: 4, column: 9 }, "Ni": { row: 4, column: 10 }, "Cu": { row: 4, column: 11 }, "Zn": { row: 4, column: 12 },
+            "Ga": { row: 4, column: 13 }, "Ge": { row: 4, column: 14 }, "As": { row: 4, column: 15 }, "Se": { row: 4, column: 16 },
+            "Br": { row: 4, column: 17 }, "Kr": { row: 4, column: 18 },
+            "Rb": { row: 5, column: 1 }, "Sr": { row: 5, column: 2 }, "Y": { row: 5, column: 3 }, "Zr": { row: 5, column: 4 },
+            "Nb": { row: 5, column: 5 }, "Mo": { row: 5, column: 6 }, "Tc": { row: 5, column: 7 }, "Ru": { row: 5, column: 8 },
+            "Rh": { row: 5, column: 9 }, "Pd": { row: 5, column: 10 }, "Ag": { row: 5, column: 11 }, "Cd": { row: 5, column: 12 },
+            "In": { row: 5, column: 13 }, "Sn": { row: 5, column: 14 }, "Sb": { row: 5, column: 15 }, "Te": { row: 5, column: 16 },
+            "I": { row: 5, column: 17 }, "Xe": { row: 5, column: 18 },
+            "Cs": { row: 6, column: 1 }, "Ba": { row: 6, column: 2 }, "La": { row: 8, column: 3 }, "Hf": { row: 6, column: 4 },
+            "Ta": { row: 6, column: 5 }, "W": { row: 6, column: 6 }, "Re": { row: 6, column: 7 }, "Os": { row: 6, column: 8 },
+            "Ir": { row: 6, column: 9 }, "Pt": { row: 6, column: 10 }, "Au": { row: 6, column: 11 }, "Hg": { row: 6, column: 12 },
+            "Tl": { row: 6, column: 13 }, "Pb": { row: 6, column: 14 }, "Bi": { row: 6, column: 15 }, "Po": { row: 6, column: 16 },
+            "At": { row: 6, column: 17 }, "Rn": { row: 6, column: 18 },
+            "Fr": { row: 7, column: 1 }, "Ra": { row: 7, column: 2 }, "Ac": { row: 9, column: 3 }, "Rf": { row: 7, column: 4 },
+            "Db": { row: 7, column: 5 }, "Sg": { row: 7, column: 6 }, "Bh": { row: 7, column: 7 }, "Hs": { row: 7, column: 8 },
+            "Mt": { row: 7, column: 9 }, "Ds": { row: 7, column: 10 }, "Rg": { row: 7, column: 11 }, "Cn": { row: 7, column: 12 },
+            "Nh": { row: 7, column: 13 }, "Fl": { row: 7, column: 14 }, "Mc": { row: 7, column: 15 }, "Lv": { row: 7, column: 16 },
+            "Ts": { row: 7, column: 17 }, "Og": { row: 7, column: 18 },
+            // Lanthanides
+            "Ce": { row: 8, column: 4 }, "Pr": { row: 8, column: 5 }, "Nd": { row: 8, column: 6 }, "Pm": { row: 8, column: 7 },
+            "Sm": { row: 8, column: 8 }, "Eu": { row: 8, column: 9 }, "Gd": { row: 8, column: 10 }, "Tb": { row: 8, column: 11 },
+            "Dy": { row: 8, column: 12 }, "Ho": { row: 8, column: 13 }, "Er": { row: 8, column: 14 }, "Tm": { row: 8, column: 15 },
+            "Yb": { row: 8, column: 16 }, "Lu": { row: 8, column: 17 },
+            // Actinides
+            "Th": { row: 9, column: 4 }, "Pa": { row: 9, column: 5 }, "U": { row: 9, column: 6 }, "Np": { row: 9, column: 7 },
+            "Pu": { row: 9, column: 8 }, "Am": { row: 9, column: 9 }, "Cm": { row: 9, column: 10 }, "Bk": { row: 9, column: 11 },
+            "Cf": { row: 9, column: 12 }, "Es": { row: 9, column: 13 }, "Fm": { row: 9, column: 14 }, "Md": { row: 9, column: 15 },
+            "No": { row: 9, column: 16 }, "Lr": { row: 9, column: 17 }
+        };
+
+        const ELEMENT_COLORS = {
+            "metal": 0x4A90E2, "nonmetal": 0x7ED321, "metalloid": 0xF5A623,
+            "noble-gas": 0xBD10E0, "alkali-metal": 0xFF6B6B, "alkaline-earth": 0xFFA07A,
+            "transition-metal": 0x87CEEB, "lanthanide": 0xFFD700, "actinide": 0xFF69B4,
+            "halogen": 0x50E3C2, "unknown": 0xCCCCCC
+        };
+
+        function wavelengthToRGB(wavelength) {
+            let r, g, b;
+            if (wavelength >= 380 && wavelength < 440) {
+                r = -(wavelength - 440) / (440 - 380); g = 0.0; b = 1.0;
+            } else if (wavelength >= 440 && wavelength < 490) {
+                r = 0.0; g = (wavelength - 440) / (490 - 440); b = 1.0;
+            } else if (wavelength >= 490 && wavelength < 510) {
+                r = 0.0; g = 1.0; b = -(wavelength - 510) / (510 - 490);
+            } else if (wavelength >= 510 && wavelength < 580) {
+                r = (wavelength - 510) / (580 - 510); g = 1.0; b = 0.0;
+            } else if (wavelength >= 580 && wavelength < 645) {
+                r = 1.0; g = -(wavelength - 645) / (645 - 580); b = 0.0;
+            } else if (wavelength >= 645 && wavelength <= 750) {
+                r = 1.0; g = 0.0; b = 0.0;
+            } else { r = 0.0; g = 0.0; b = 0.0; }
+            
+            let factor;
+            if (wavelength >= 380 && wavelength < 420) {
+                factor = 0.3 + 0.7 * (wavelength - 380) / (420 - 380);
+            } else if (wavelength >= 420 && wavelength <= 700) {
+                factor = 1.0;
+            } else if (wavelength > 700 && wavelength <= 750) {
+                factor = 0.3 + 0.7 * (750 - wavelength) / (750 - 700);
+            } else { factor = 0.0; }
+            
+            const gamma = 0.80;
+            return new THREE.Color(Math.pow(r * factor, gamma), Math.pow(g * factor, gamma), Math.pow(b * factor, gamma));
+        }
+
+        function getSpectrumColor(wavelength) {
+            if (wavelength < 380) return { color: new THREE.Color(0x9400D3), opacity: 0.5 };
+            else if (wavelength > 750) return { color: new THREE.Color(0x8B0000), opacity: 0.5 };
+            else return { color: wavelengthToRGB(wavelength), opacity: 1.0 };
+        }
+
+        class PeriodicTableApp {
+            constructor() {
+                this.scene = null; this.camera = null; this.renderer = null; this.controls = null;
+                this.elementMeshes = new Map(); this.elementSprites = new Map(); this.elementsData = new Map();
+                this.selectedElement = null; this.highlightedElement = null;
+            }
+
+            async init() {
+                try {
+                    SPECTRAL_DATA.elements.forEach(element => {
+                        this.elementsData.set(element.symbol, element);
+                    });
+
+                    // Show app container first so we can get proper dimensions
+                    document.getElementById('app-container').style.display = 'block';
+                    
+                    const container = document.getElementById('canvas-container');
+                    this.scene = new THREE.Scene();
+                    this.scene.background = new THREE.Color(0x1a1a2e);
+
+                    const aspect = window.innerWidth / window.innerHeight;
+                    this.camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 1000);
+                    this.camera.position.set(0, 0, 12);
+
+                    this.renderer = new THREE.WebGLRenderer({ antialias: true });
+                    this.renderer.setSize(window.innerWidth, window.innerHeight);
+                    this.renderer.setPixelRatio(window.devicePixelRatio);
+                    container.appendChild(this.renderer.domElement);
+
+                    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+                    this.scene.add(ambientLight);
+                    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+                    directionalLight.position.set(10, 10, 10);
+                    this.scene.add(directionalLight);
+
+                    this.createPeriodicTable();
+
+                    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+                    this.controls.enableDamping = true;
+                    this.controls.dampingFactor = 0.05;
+                    this.controls.minDistance = 10;
+                    this.controls.maxDistance = 80;
+
+                    this.renderer.domElement.addEventListener('mousemove', (e) => this.onMouseMove(e));
+                    this.renderer.domElement.addEventListener('click', (e) => this.onClick(e));
+                    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') this.deselectElement(); });
+                    window.addEventListener('resize', () => this.onWindowResize());
+
+                    this.animate();
+                    
+                    // Hide loading after everything is set up
+                    document.getElementById('loading').style.display = 'none';
+                } catch (error) {
+                    console.error('Init error:', error);
+                    document.getElementById('loading').innerHTML = '<div style="color: #ff6b6b;"><h2>Failed to Load</h2><p>' + error.message + '</p></div>';
+                }
+            }
+
+            createPeriodicTable() {
+                this.elementsData.forEach((elementData, symbol) => {
+                    const pos = ELEMENT_LAYOUT[symbol];
+                    if (!pos) return;
+
+                    const unit = 1.1;
+                    const x = (pos.column - 9.5) * unit;
+                    const y = -(pos.row - 3.5) * unit;
+
+                    const geometry = new RoundedBoxGeometry(0.9, 0.9, 0.4, 4, 0.08);
+                    const color = ELEMENT_COLORS[elementData.category] || ELEMENT_COLORS.unknown;
+                    const material = new THREE.MeshStandardMaterial({
+                        color: color, emissive: 0x000000, metalness: 0.3, roughness: 0.7
+                    });
+
+                    const mesh = new THREE.Mesh(geometry, material);
+                    mesh.position.set(x, y, 0);
+                    mesh.userData = { symbol, elementData, originalZ: 0 };
+                    this.scene.add(mesh);
+                    this.elementMeshes.set(symbol, mesh);
+
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    canvas.width = 128; canvas.height = 128;
+                    context.fillStyle = 'rgba(255, 255, 255, 0.7)';
+                    context.font = 'bold 24px Arial';
+                    context.textAlign = 'center';
+                    context.textBaseline = 'top';
+                    context.fillText(elementData.atomicNumber, 64, 10);
+                    context.fillStyle = 'white';
+                    context.font = 'bold 60px Arial';
+                    context.textBaseline = 'middle';
+                    context.fillText(symbol, 64, 75);
+
+                    const texture = new THREE.CanvasTexture(canvas);
+                    const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
+                    const sprite = new THREE.Sprite(spriteMaterial);
+                    sprite.scale.set(0.6, 0.6, 1);
+                    sprite.position.set(x, y, 0.5);
+                    sprite.userData = { symbol, originalZ: 0.5 };
+                    this.scene.add(sprite);
+                    this.elementSprites.set(symbol, sprite);
+                });
+            }
+
+            onMouseMove(event) {
+                const rect = this.renderer.domElement.getBoundingClientRect();
+                const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+                const y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+                const element = this.getElementAtPosition(x, y);
+                if (element) {
+                    this.renderer.domElement.style.cursor = 'pointer';
+                    this.highlightElement(element);
+                } else {
+                    this.renderer.domElement.style.cursor = 'default';
+                    this.highlightElement(null);
+                }
+            }
+
+            onClick(event) {
+                const rect = this.renderer.domElement.getBoundingClientRect();
+                const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+                const y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+                const element = this.getElementAtPosition(x, y);
+                if (element) this.selectElement(element);
+                else this.deselectElement();
+            }
+
+            getElementAtPosition(x, y) {
+                const raycaster = new THREE.Raycaster();
+                const mouse = new THREE.Vector2(x, y);
+                raycaster.setFromCamera(mouse, this.camera);
+                const meshes = Array.from(this.elementMeshes.values());
+                const intersects = raycaster.intersectObjects(meshes);
+                return intersects.length > 0 ? intersects[0].object.userData.symbol : null;
+            }
+
+            highlightElement(symbol) {
+                if (this.highlightedElement && this.highlightedElement !== this.selectedElement) {
+                    const mesh = this.elementMeshes.get(this.highlightedElement);
+                    const sprite = this.elementSprites.get(this.highlightedElement);
+                    if (mesh) {
+                        mesh.material.emissive.setHex(0x000000);
+                        mesh.position.z = mesh.userData.originalZ;
+                    }
+                    if (sprite) {
+                        sprite.position.z = sprite.userData.originalZ;
+                    }
+                }
+                if (symbol && symbol !== this.selectedElement) {
+                    const mesh = this.elementMeshes.get(symbol);
+                    const sprite = this.elementSprites.get(symbol);
+                    if (mesh) {
+                        mesh.material.emissive.setHex(0x444444);
+                        mesh.position.z = mesh.userData.originalZ + 0.2;
+                    }
+                    if (sprite) {
+                        sprite.position.z = sprite.userData.originalZ + 0.2;
+                    }
+                }
+                this.highlightedElement = symbol;
+            }
+
+            selectElement(symbol) {
+                if (this.selectedElement) {
+                    const mesh = this.elementMeshes.get(this.selectedElement);
+                    const sprite = this.elementSprites.get(this.selectedElement);
+                    if (mesh) {
+                        mesh.material.emissive.setHex(0x000000);
+                        mesh.position.z = mesh.userData.originalZ;
+                    }
+                    if (sprite) {
+                        sprite.position.z = sprite.userData.originalZ;
+                    }
+                }
+                if (symbol) {
+                    const mesh = this.elementMeshes.get(symbol);
+                    const sprite = this.elementSprites.get(symbol);
+                    if (mesh) {
+                        mesh.material.emissive.setHex(0x00ff00);
+                        mesh.position.z = mesh.userData.originalZ;
+                    }
+                    if (sprite) {
+                        sprite.position.z = sprite.userData.originalZ;
+                    }
+                    this.showSpectrum(symbol);
+                }
+                this.selectedElement = symbol;
+            }
+
+            deselectElement() {
+                this.selectElement(null);
+                document.getElementById('info-panel-wrapper').classList.add('hidden');
+            }
+
+            showSpectrum(symbol) {
+                const elementData = this.elementsData.get(symbol);
+                if (!elementData) return;
+
+                document.getElementById('element-name').textContent = elementData.name;
+                const detailsHTML = `<div><strong>Symbol:</strong> ${elementData.symbol} | <strong>Atomic Number:</strong> ${elementData.atomicNumber}</div>
+                    <div style="margin-top: 8px;"><span class="origin-badge" style="background-color: ${elementData.originColor}; color: #000;">${elementData.cosmicOrigin}</span></div>`;
+                document.getElementById('element-details').innerHTML = detailsHTML;
+
+                const container = document.getElementById('spectrum-container');
+                container.innerHTML = '';
+
+                const astronomyDiv = document.createElement('div');
+                astronomyDiv.className = 'astronomy-info';
+                astronomyDiv.innerHTML = `
+                    <div class="collapsible-header" onclick="this.parentElement.querySelector('.collapsible-content').classList.toggle('collapsed'); this.querySelector('.collapse-icon').classList.toggle('collapsed');">
+                        <h4>🌟 Cosmic Origin</h4>
+                        <span class="collapse-icon">▼</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <p>${elementData.astronomyInfo}</p>
+                    </div>
+                `;
+                container.appendChild(astronomyDiv);
+
+                // Add chemistry information if available
+                if (elementData.chemistryInfo) {
+                    const chemistryDiv = document.createElement('div');
+                    chemistryDiv.className = 'chemistry-info';
+                    chemistryDiv.innerHTML = `
+                        <div class="collapsible-header" onclick="this.parentElement.querySelector('.collapsible-content').classList.toggle('collapsed'); this.querySelector('.collapse-icon').classList.toggle('collapsed');">
+                            <h4>🧪 Chemistry</h4>
+                            <span class="collapse-icon collapsed">▼</span>
+                        </div>
+                        <div class="collapsible-content collapsed">
+                            <p>${elementData.chemistryInfo}</p>
+                        </div>
+                    `;
+                    container.appendChild(chemistryDiv);
+                }
+
+                // Add physics information if available
+                if (elementData.physicsInfo) {
+                    const physicsDiv = document.createElement('div');
+                    physicsDiv.className = 'physics-info';
+                    physicsDiv.innerHTML = `
+                        <div class="collapsible-header" onclick="this.parentElement.querySelector('.collapsible-content').classList.toggle('collapsed'); this.querySelector('.collapse-icon').classList.toggle('collapsed');">
+                            <h4>⚛️ Physics</h4>
+                            <span class="collapse-icon collapsed">▼</span>
+                        </div>
+                        <div class="collapsible-content collapsed">
+                            <p>${elementData.physicsInfo}</p>
+                        </div>
+                    `;
+                    container.appendChild(physicsDiv);
+                }
+
+                const lines = elementData.spectralLines;
+                const sortedLines = [...lines].sort((a, b) => (b.intensity || 0) - (a.intensity || 0)).slice(0, 20);
+
+                const spectrumTitle = document.createElement('h3');
+                spectrumTitle.textContent = 'Emission Spectrum';
+                spectrumTitle.style.marginTop = '15px';
+                spectrumTitle.style.marginBottom = '5px';
+                spectrumTitle.style.fontSize = '16px';
+                container.appendChild(spectrumTitle);
+                
+                const spectrumNote = document.createElement('p');
+                spectrumNote.textContent = 'Click the spectrum to view detailed visualization';
+                spectrumNote.style.fontSize = '12px';
+                spectrumNote.style.color = '#4fc3f7';
+                spectrumNote.style.marginBottom = '10px';
+                spectrumNote.style.fontStyle = 'italic';
+                container.appendChild(spectrumNote);
+
+                const canvas = document.createElement('canvas');
+                canvas.width = 360; canvas.height = 200;
+                canvas.style.width = '100%';
+                canvas.style.border = '1px solid rgba(255, 255, 255, 0.2)';
+                canvas.style.borderRadius = '5px';
+                canvas.className = 'spectrum-clickable';
+                canvas.title = 'Click to view detailed spectrum';
+                canvas.onclick = () => this.showDetailedSpectrum(symbol, elementData);
+
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#000';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                const wavelengths = sortedLines.map(l => l.wavelength);
+                const minWave = Math.min(...wavelengths, 380);
+                const maxWave = Math.max(...wavelengths, 750);
+                const range = maxWave - minWave;
+
+                ctx.fillStyle = '#666';
+                ctx.font = '10px Arial';
+                ctx.textAlign = 'center';
+                for (let w = Math.ceil(minWave / 50) * 50; w <= maxWave; w += 50) {
+                    const x = ((w - minWave) / range) * (canvas.width - 40) + 20;
+                    ctx.fillRect(x, canvas.height - 20, 1, 10);
+                    ctx.fillText(w + 'nm', x, canvas.height - 5);
+                }
+
+                sortedLines.forEach(line => {
+                    const { color, opacity } = getSpectrumColor(line.wavelength);
+                    const x = ((line.wavelength - minWave) / range) * (canvas.width - 40) + 20;
+                    const height = (line.intensity || 0.5) * 140;
+                    ctx.fillStyle = `rgba(${Math.floor(color.r * 255)}, ${Math.floor(color.g * 255)}, ${Math.floor(color.b * 255)}, ${opacity})`;
+                    ctx.fillRect(x - 2, canvas.height - 30 - height, 4, height);
+                    if (line.intensity > 0.5) {
+                        ctx.fillStyle = '#fff';
+                        ctx.font = '9px Arial';
+                        ctx.save();
+                        ctx.translate(x, canvas.height - 35 - height);
+                        ctx.rotate(-Math.PI / 2);
+                        ctx.fillText(line.wavelength.toFixed(1), 0, 0);
+                        ctx.restore();
+                    }
+                });
+
+                container.appendChild(canvas);
+
+                const detailsDiv = document.createElement('div');
+                detailsDiv.style.marginTop = '10px';
+                detailsDiv.style.fontSize = '12px';
+                detailsDiv.style.maxHeight = '200px';
+                detailsDiv.style.overflowY = 'auto';
+                detailsDiv.innerHTML = '<h3 style="margin-bottom: 10px;">Spectral Lines:</h3>';
+
+                sortedLines.forEach(line => {
+                    const lineDiv = document.createElement('div');
+                    lineDiv.style.marginBottom = '5px';
+                    lineDiv.style.padding = '5px';
+                    lineDiv.style.background = 'rgba(255, 255, 255, 0.05)';
+                    lineDiv.style.borderRadius = '3px';
+                    const { color } = getSpectrumColor(line.wavelength);
+                    const colorBox = `<span style="display: inline-block; width: 12px; height: 12px; background: rgb(${Math.floor(color.r * 255)}, ${Math.floor(color.g * 255)}, ${Math.floor(color.b * 255)}); border: 1px solid #fff; margin-right: 5px;"></span>`;
+                    
+                    let transitionInfo = '';
+                    if (line.transition) {
+                        transitionInfo = ` <span style="color: #4fc3f7;">| ${line.transition}</span>`;
+                    }
+                    
+                    lineDiv.innerHTML = `${colorBox}${line.wavelength.toFixed(1)} nm (Intensity: ${(line.intensity || 0).toFixed(2)})${transitionInfo}`;
+                    detailsDiv.appendChild(lineDiv);
+                });
+
+                container.appendChild(detailsDiv);
+                document.getElementById('info-panel-wrapper').classList.remove('hidden');
+            }
+
+            showDetailedSpectrum(symbol, elementData) {
+                const modal = document.getElementById('spectrum-modal');
+                const modalContent = document.getElementById('spectrum-modal-content');
+                
+                modalContent.innerHTML = '';
+                
+                const title = document.createElement('h2');
+                title.textContent = `${elementData.name} (${symbol}) - Emission Spectrum`;
+                title.style.color = '#4fc3f7';
+                title.style.textAlign = 'center';
+                title.style.marginBottom = '10px';
+                title.style.fontSize = '28px';
+                modalContent.appendChild(title);
+                
+                // Add element properties section
+                const propsSection = document.createElement('div');
+                propsSection.style.background = 'rgba(79, 195, 247, 0.1)';
+                propsSection.style.border = '1px solid rgba(79, 195, 247, 0.3)';
+                propsSection.style.borderRadius = '8px';
+                propsSection.style.padding = '15px';
+                propsSection.style.marginBottom = '20px';
+                propsSection.style.display = 'grid';
+                propsSection.style.gridTemplateColumns = 'repeat(auto-fit, minmax(200px, 1fr))';
+                propsSection.style.gap = '15px';
+                propsSection.style.fontSize = '14px';
+                
+                const atomicNumber = `<div><strong>Atomic Number:</strong> ${elementData.atomicNumber}</div>`;
+                const category = `<div><strong>Category:</strong> ${elementData.category.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</div>`;
+                const cosmicOrigin = `<div><strong>Cosmic Origin:</strong> <span style="color: ${elementData.originColor}">${elementData.cosmicOrigin}</span></div>`;
+                const spectralLinesCount = `<div><strong>Spectral Lines:</strong> ${elementData.spectralLines.length} lines</div>`;
+                
+                propsSection.innerHTML = atomicNumber + category + cosmicOrigin + spectralLinesCount;
+                modalContent.appendChild(propsSection);
+                
+                // Check wavelength range of spectral lines
+                const lines = elementData.spectralLines || [];
+                const wavelengths = lines.map(l => l.wavelength);
+                const minLineWave = Math.min(...wavelengths);
+                const maxLineWave = Math.max(...wavelengths);
+                
+                // Determine if we need extended range
+                const hasUV = minLineWave < 380;
+                const hasIR = maxLineWave > 750;
+                const showExtended = hasUV || hasIR;
+                
+                let minWave, maxWave, rangeLabel;
+                if (showExtended) {
+                    minWave = 200;
+                    maxWave = 1000;
+                    rangeLabel = 'Extended Spectrum (200-1000 nm) - Including UV and IR';
+                } else {
+                    minWave = 380;
+                    maxWave = 750;
+                    rangeLabel = 'Visible Spectrum (380-750 nm)';
+                }
+                
+                const subtitle = document.createElement('p');
+                subtitle.textContent = rangeLabel;
+                subtitle.style.color = '#aaa';
+                subtitle.style.textAlign = 'center';
+                subtitle.style.marginBottom = '30px';
+                subtitle.style.fontSize = '16px';
+                modalContent.appendChild(subtitle);
+                
+                const canvas = document.createElement('canvas');
+                canvas.width = 1400;
+                canvas.height = 300;
+                canvas.style.width = '100%';
+                canvas.style.border = '2px solid rgba(255, 255, 255, 0.3)';
+                canvas.style.borderRadius = '10px';
+                canvas.style.background = '#000';
+                
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#000';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                const range = maxWave - minWave;
+                
+                if (showExtended) {
+                    // Draw spectrum regions for extended view
+                    const regions = [
+                        { start: 200, end: 380, label: 'UV', color: 'rgba(138, 43, 226, 0.15)' },
+                        { start: 380, end: 750, label: 'Visible', color: 'rgba(255, 255, 255, 0.05)' },
+                        { start: 750, end: 1000, label: 'IR', color: 'rgba(255, 0, 0, 0.15)' }
+                    ];
+                    
+                    regions.forEach(region => {
+                        const x1 = ((region.start - minWave) / range) * (canvas.width - 80) + 40;
+                        const x2 = ((region.end - minWave) / range) * (canvas.width - 80) + 40;
+                        ctx.fillStyle = region.color;
+                        ctx.fillRect(x1, 50, x2 - x1, canvas.height - 100);
+                        
+                        ctx.fillStyle = '#888';
+                        ctx.font = 'bold 12px Arial';
+                        ctx.textAlign = 'center';
+                        ctx.fillText(region.label, (x1 + x2) / 2, 35);
+                    });
+                }
+                
+                // Draw continuous visible spectrum gradient
+                const visStart = Math.max(380, minWave);
+                const visEnd = Math.min(750, maxWave);
+                const gradientHeight = 40;
+                const gradientY = canvas.height - 80;
+                
+                for (let w = visStart; w <= visEnd; w += 1) {
+                    const x = ((w - minWave) / range) * (canvas.width - 80) + 40;
+                    const color = wavelengthToRGB(w);
+                    ctx.fillStyle = `rgb(${Math.floor(color.r * 255)}, ${Math.floor(color.g * 255)}, ${Math.floor(color.b * 255)})`;
+                    ctx.fillRect(x, gradientY, 2, gradientHeight);
+                }
+                
+                // Draw wavelength scale below gradient
+                ctx.strokeStyle = '#666';
+                ctx.lineWidth = 1;
+                ctx.fillStyle = '#aaa';
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'center';
+                
+                // Major tick marks
+                const tickInterval = showExtended ? 100 : 50;
+                const startTick = Math.ceil(minWave / tickInterval) * tickInterval;
+                for (let w = startTick; w <= maxWave; w += tickInterval) {
+                    const x = ((w - minWave) / range) * (canvas.width - 80) + 40;
+                    ctx.beginPath();
+                    ctx.moveTo(x, gradientY + gradientHeight);
+                    ctx.lineTo(x, gradientY + gradientHeight + 10);
+                    ctx.stroke();
+                    ctx.fillText(w, x, gradientY + gradientHeight + 25);
+                }
+                
+                // Minor tick marks
+                const minorInterval = showExtended ? 20 : 10;
+                ctx.strokeStyle = '#444';
+                for (let w = minWave; w <= maxWave; w += minorInterval) {
+                    if (w % tickInterval !== 0) {
+                        const x = ((w - minWave) / range) * (canvas.width - 80) + 40;
+                        ctx.beginPath();
+                        ctx.moveTo(x, gradientY + gradientHeight);
+                        ctx.lineTo(x, gradientY + gradientHeight + 5);
+                        ctx.stroke();
+                    }
+                }
+                
+                // Add "nm" label
+                ctx.fillStyle = '#aaa';
+                ctx.font = '14px Arial';
+                ctx.textAlign = 'right';
+                ctx.fillText('Wavelength (nm)', canvas.width - 45, gradientY + gradientHeight + 25);
+                
+                // Draw spectral lines
+                lines.forEach(line => {
+                    if (line.wavelength >= minWave && line.wavelength <= maxWave) {
+                        const { color, opacity } = getSpectrumColor(line.wavelength);
+                        const x = ((line.wavelength - minWave) / range) * (canvas.width - 80) + 40;
+                        const intensity = line.intensity || 0.5;
+                        const height = 30 + intensity * 150;
+                        
+                        // Draw line with glow effect
+                        const gradient = ctx.createLinearGradient(x, gradientY - height, x, gradientY);
+                        gradient.addColorStop(0, `rgba(${Math.floor(color.r * 255)}, ${Math.floor(color.g * 255)}, ${Math.floor(color.b * 255)}, ${opacity})`);
+                        gradient.addColorStop(1, `rgba(${Math.floor(color.r * 255)}, ${Math.floor(color.g * 255)}, ${Math.floor(color.b * 255)}, ${opacity * 0.3})`);
+                        
+                        ctx.fillStyle = gradient;
+                        ctx.fillRect(x - 2, gradientY - height, 4, height);
+                        
+                        // Add glow
+                        ctx.shadowBlur = 10;
+                        ctx.shadowColor = `rgba(${Math.floor(color.r * 255)}, ${Math.floor(color.g * 255)}, ${Math.floor(color.b * 255)}, ${opacity})`;
+                        ctx.fillRect(x - 2, gradientY - height, 4, height);
+                        ctx.shadowBlur = 0;
+                        
+                        // Label prominent lines
+                        if (intensity > 0.6) {
+                            ctx.fillStyle = '#fff';
+                            ctx.font = 'bold 11px Arial';
+                            ctx.textAlign = 'center';
+                            ctx.fillText(line.wavelength.toFixed(1), x, gradientY - height - 10);
+                            
+                            // Draw transition info if available
+                            if (line.transition) {
+                                ctx.font = '9px Arial';
+                                ctx.fillStyle = '#4fc3f7';
+                                ctx.fillText(line.transition, x, gradientY - height - 22);
+                            }
+                        }
+                    }
+                });
+                
+                
+                modalContent.appendChild(canvas);
+                
+                // Add line details table
+                const detailsTitle = document.createElement('h3');
+                detailsTitle.textContent = 'Spectral Line Details';
+                detailsTitle.style.color = '#4fc3f7';
+                detailsTitle.style.marginTop = '30px';
+                detailsTitle.style.marginBottom = '15px';
+                detailsTitle.style.fontSize = '20px';
+                modalContent.appendChild(detailsTitle);
+                
+                const table = document.createElement('div');
+                table.style.display = 'grid';
+                table.style.gridTemplateColumns = '1fr 1fr 1fr';
+                table.style.gap = '10px';
+                table.style.color = '#ccc';
+                table.style.fontSize = '13px';
+                
+                lines.sort((a, b) => b.intensity - a.intensity).forEach(line => {
+                    const lineItem = document.createElement('div');
+                    lineItem.style.padding = '10px';
+                    lineItem.style.background = 'rgba(255, 255, 255, 0.05)';
+                    lineItem.style.borderRadius = '5px';
+                    lineItem.style.borderLeft = '3px solid';
+                    const { color } = getSpectrumColor(line.wavelength);
+                    lineItem.style.borderColor = `rgb(${Math.floor(color.r * 255)}, ${Math.floor(color.g * 255)}, ${Math.floor(color.b * 255)})`;
+                    
+                    let regionLabel = '';
+                    if (line.wavelength < 380) {
+                        regionLabel = '<span style="color: #8A2BE2; font-size: 11px;"> (UV)</span>';
+                    } else if (line.wavelength > 750) {
+                        regionLabel = '<span style="color: #ff0000; font-size: 11px;"> (IR)</span>';
+                    }
+                    
+                    let transitionText = '';
+                    if (line.transition) {
+                        transitionText = `<br><span style="color: #4fc3f7; font-size: 11px;">${line.transition}</span>`;
+                    }
+                    
+                    lineItem.innerHTML = `
+                        <strong>${line.wavelength.toFixed(1)} nm${regionLabel}</strong><br>
+                        Intensity: ${(line.intensity || 0).toFixed(2)}${transitionText}
+                    `;
+                    table.appendChild(lineItem);
+                });
+                
+                modalContent.appendChild(table);
+                
+                // Add note
+                const note = document.createElement('p');
+                note.style.marginTop = '30px';
+                note.style.textAlign = 'center';
+                note.style.color = '#888';
+                note.style.fontSize = '13px';
+                if (showExtended) {
+                    note.innerHTML = 'Line heights represent relative intensities. UV (ultraviolet) and IR (infrared) lines are shown in shaded regions.<br>Press ESC or click outside to close.';
+                } else {
+                    note.innerHTML = 'Line heights represent relative intensities. Colors match actual wavelengths in the visible spectrum.<br>Press ESC or click outside to close.';
+                }
+                modalContent.appendChild(note);
+                
+                // Add data source reference
+                const reference = document.createElement('p');
+                reference.style.marginTop = '20px';
+                reference.style.textAlign = 'center';
+                reference.style.color = '#666';
+                reference.style.fontSize = '12px';
+                const elementNameLower = elementData.name.toLowerCase();
+                reference.innerHTML = `Data source: <a href="https://www.nist.gov/pml/atomic-spectra-database" target="_blank" style="color: #4fc3f7; text-decoration: none;">NIST Atomic Spectra Database</a> | <a href="https://www.physics.nist.gov/PhysRefData/Handbook/Tables/${elementNameLower}table2.htm" target="_blank" style="color: #4fc3f7; text-decoration: none;">View full ${elementData.name} data at NIST</a>`;
+                modalContent.appendChild(reference);
+                
+                modal.classList.add('active');
+                
+                // Close on ESC key
+                const escHandler = (e) => {
+                    if (e.key === 'Escape') {
+                        modal.classList.remove('active');
+                        document.removeEventListener('keydown', escHandler);
+                    }
+                };
+                document.addEventListener('keydown', escHandler);
+                
+                // Close on click outside
+                modal.onclick = (e) => {
+                    if (e.target === modal) {
+                        modal.classList.remove('active');
+                    }
+                };
+            }
+
+            onWindowResize() {
+                this.camera.aspect = window.innerWidth / window.innerHeight;
+                this.camera.updateProjectionMatrix();
+                this.renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+
+            animate() {
+                requestAnimationFrame(() => this.animate());
+                this.controls.update();
+                this.renderer.render(this.scene, this.camera);
+            }
+        }
+
+        const app = new PeriodicTableApp();
+        app.init();
+    </script>
+</body>
+</html>

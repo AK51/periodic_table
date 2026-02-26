@@ -1,0 +1,118 @@
+{
+  "elements": [
+    {
+      "symbol": "H",
+      "name": "Hydrogen",
+      "atomicNumber": 1,
+      "category": "nonmetal",
+      "spectralLines": [
+        { "wavelength": 656.3, "intensity": 1.0, "transition": "3→2 (Hα)" },
+        { "wavelength": 486.1, "intensity": 0.5, "transition": "4→2 (Hβ)" },
+        { "wavelength": 434.0, "intensity": 0.3, "transition": "5→2 (Hγ)" },
+        { "wavelength": 410.2, "intensity": 0.2, "transition": "6→2 (Hδ)" }
+      ]
+    },
+    {
+      "symbol": "He",
+      "name": "Helium",
+      "atomicNumber": 2,
+      "category": "noble-gas",
+      "spectralLines": [
+        { "wavelength": 587.6, "intensity": 1.0 },
+        { "wavelength": 667.8, "intensity": 0.3 },
+        { "wavelength": 501.6, "intensity": 0.4 },
+        { "wavelength": 447.1, "intensity": 0.2 }
+      ]
+    },
+    {
+      "symbol": "Li",
+      "name": "Lithium",
+      "atomicNumber": 3,
+      "category": "alkali-metal",
+      "spectralLines": [
+        { "wavelength": 670.8, "intensity": 1.0 },
+        { "wavelength": 610.4, "intensity": 0.3 }
+      ]
+    },
+    {
+      "symbol": "C",
+      "name": "Carbon",
+      "atomicNumber": 6,
+      "category": "nonmetal",
+      "spectralLines": [
+        { "wavelength": 247.9, "intensity": 1.0 },
+        { "wavelength": 426.7, "intensity": 0.4 },
+        { "wavelength": 538.0, "intensity": 0.3 }
+      ]
+    },
+    {
+      "symbol": "N",
+      "name": "Nitrogen",
+      "atomicNumber": 7,
+      "category": "nonmetal",
+      "spectralLines": [
+        { "wavelength": 399.5, "intensity": 0.8 },
+        { "wavelength": 500.5, "intensity": 0.5 },
+        { "wavelength": 567.6, "intensity": 0.3 }
+      ]
+    },
+    {
+      "symbol": "O",
+      "name": "Oxygen",
+      "atomicNumber": 8,
+      "category": "nonmetal",
+      "spectralLines": [
+        { "wavelength": 777.4, "intensity": 1.0 },
+        { "wavelength": 844.6, "intensity": 0.7 },
+        { "wavelength": 615.8, "intensity": 0.4 }
+      ]
+    },
+    {
+      "symbol": "Na",
+      "name": "Sodium",
+      "atomicNumber": 11,
+      "category": "alkali-metal",
+      "spectralLines": [
+        { "wavelength": 589.0, "intensity": 1.0 },
+        { "wavelength": 589.6, "intensity": 0.9 },
+        { "wavelength": 568.3, "intensity": 0.2 }
+      ]
+    },
+    {
+      "symbol": "Fe",
+      "name": "Iron",
+      "atomicNumber": 26,
+      "category": "transition-metal",
+      "spectralLines": [
+        { "wavelength": 438.4, "intensity": 0.9 },
+        { "wavelength": 440.5, "intensity": 0.8 },
+        { "wavelength": 495.8, "intensity": 0.6 },
+        { "wavelength": 526.9, "intensity": 0.7 },
+        { "wavelength": 532.8, "intensity": 0.5 }
+      ]
+    },
+    {
+      "symbol": "Cu",
+      "name": "Copper",
+      "atomicNumber": 29,
+      "category": "transition-metal",
+      "spectralLines": [
+        { "wavelength": 324.8, "intensity": 1.0 },
+        { "wavelength": 327.4, "intensity": 0.9 },
+        { "wavelength": 510.6, "intensity": 0.4 },
+        { "wavelength": 521.8, "intensity": 0.5 }
+      ]
+    },
+    {
+      "symbol": "Au",
+      "name": "Gold",
+      "atomicNumber": 79,
+      "category": "transition-metal",
+      "spectralLines": [
+        { "wavelength": 267.6, "intensity": 1.0 },
+        { "wavelength": 312.3, "intensity": 0.7 },
+        { "wavelength": 479.3, "intensity": 0.3 }
+      ]
+    }
+  ]
+}

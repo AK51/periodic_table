@@ -1,0 +1,31 @@
+Chemistry and Physics data for all elements to be added:
+
+H: chemistryInfo: "The simplest element with one proton and one electron. Forms covalent bonds in H₂ molecules. Essential for water (H₂O), acids, and all organic compounds. Has three isotopes: protium, deuterium, and tritium."
+   physicsInfo: "Atomic mass: 1.008 u. Ionization energy: 13.6 eV. The only atom with exact analytical solution to Schrödinger equation. Melting point: -259°C, Boiling point: -253°C."
+
+He: chemistryInfo: "Noble gas with complete electron shell, chemically inert. Does not form compounds under normal conditions. Lowest boiling point (-269°C). Used in balloons, diving, and cryogenics."
+    physicsInfo: "Atomic mass: 4.003 u. Ionization energy: 24.6 eV (highest). Exhibits superfluidity below 2.17 K. Two stable isotopes: ³He and ⁴He."
+
+Li: chemistryInfo: "Highly reactive alkali metal, stored in oil. Forms ionic compounds with halogens. Lightest metal and least dense solid. Used in rechargeable batteries and psychiatric medication."
+    physicsInfo: "Atomic mass: 6.94 u. Melting point: 180.5°C. Highest specific heat of any solid. Two stable isotopes: ⁶Li and ⁷Li. Excellent conductor."
+
+Be: chemistryInfo: "Alkaline earth metal, forms strong covalent bonds. Toxic and carcinogenic. Used in aerospace alloys and X-ray windows. Forms Be²⁺ ions."
+    physicsInfo: "Atomic mass: 9.012 u. Melting point: 1287°C. High stiffness-to-weight ratio. Transparent to X-rays. One stable isotope: ⁹Be."
+
+C: chemistryInfo: "Basis of organic chemistry, forms 4 covalent bonds. Exists as diamond, graphite, and fullerenes. Essential for all known life. Forms millions of compounds."
+   physicsInfo: "Atomic mass: 12.011 u. Sublimes at 3642°C. Diamond is hardest natural material. Graphene has highest strength. Isotopes: ¹²C, ¹³C, ¹⁴C (radioactive)."
+
+N: chemistryInfo: "Diatomic gas (N₂) with triple bond, very stable. Essential for proteins and DNA. Forms nitrates and ammonia. Makes up 78% of Earth's atmosphere."
+   physicsInfo: "Atomic mass: 14.007 u. Boiling point: -196°C. Triple bond energy: 945 kJ/mol. Two stable isotopes: ¹⁴N, ¹⁵N."
+
+O: chemistryInfo: "Highly reactive, forms oxides with most elements. Essential for respiration. Exists as O₂ and O₃ (ozone). Second most electronegative element."
+   physicsInfo: "Atomic mass: 15.999 u. Boiling point: -183°C. Paramagnetic in liquid form. Three stable isotopes: ¹⁶O, ¹⁷O, ¹⁸O."
+
+F: chemistryInfo: "Most electronegative and reactive element. Forms fluorides with all elements except He, Ne, Ar. Used in toothpaste and Teflon. Highly toxic."
+   physicsInfo: "Atomic mass: 18.998 u. Boiling point: -188°C. Electronegativity: 4.0 (highest). One stable isotope: ¹⁹F."
+
+Ne: chemistryInfo: "Noble gas, chemically inert. No known compounds. Used in neon signs (red-orange glow), lasers, and cryogenic refrigeration."
+    physicsInfo: "Atomic mass: 20.180 u. Boiling point: -246°C. Three stable isotopes: ²⁰Ne, ²¹Ne, ²²Ne. Ionization energy: 21.6 eV."
+
+Na: chemistryInfo: "Highly reactive alkali metal, reacts violently with water. Forms Na⁺ ions. Essential for nerve function. Found in table salt (NaCl)."
+    physicsInfo: "Atomic mass: 22.990 u. Melting point: 98°C. Soft enough to cut with knife. One stable isotope: ²³Na. Excellent conductor."
