@@ -11,6 +11,9 @@ license: mit
 # Periodic Table Spectrum Viewer
 
 An interactive 3D periodic table with detailed emission spectrum visualization for all 118 elements.
+<img width="1268" height="670" alt="main1" src="https://github.com/user-attachments/assets/5c36110f-ce15-42a0-9e6b-4c38393c565d" />
+<img width="1038" height="642" alt="main2" src="https://github.com/user-attachments/assets/11568db1-c9c4-46b8-8b0f-1d2b4fa44677" />
+
 
 ## Features
 
@@ -57,3 +60,4 @@ Created by Andy Kong
 ## License
 
 MIT License - Feel free to use and modify for your own projects!
+
