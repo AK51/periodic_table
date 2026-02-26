@@ -325,10 +325,10 @@
               chemistryInfo: "The simplest element with one proton and one electron. Forms covalent bonds in H₂ molecules. Essential for water (H₂O), acids, and all organic compounds. Has three isotopes: protium, deuterium, and tritium.",
               physicsInfo: "Electron configuration: 1s¹. Isotopes: ¹H (99.985%), ²H/Deuterium (0.015%), ³H/Tritium (trace, radioactive). Atomic mass: 1.008 u. Ionization energy: 13.6 eV.",
               spectralLines: [
-                { wavelength: 656.3, intensity: 1.0, transition: "n=3→n=2 (Hα, Balmer)" },
-                { wavelength: 486.1, intensity: 0.5, transition: "n=4→n=2 (Hβ, Balmer)" },
-                { wavelength: 434.0, intensity: 0.3, transition: "n=5→n=2 (Hγ, Balmer)" },
-                { wavelength: 410.2, intensity: 0.2, transition: "n=6→n=2 (Hδ, Balmer)" }
+                { wavelength: 410.2, intensity: 0.5, transition: "n=6→n=2 (Hδ, Balmer)" },
+                { wavelength: 434.0, intensity: 0.7, transition: "n=5→n=2 (Hγ, Balmer)" },
+                { wavelength: 486.1, intensity: 0.9, transition: "n=4→n=2 (Hβ, Balmer)" },
+                { wavelength: 656.3, intensity: 1.0, transition: "n=3→n=2 (Hα, Balmer, red)" }
             ]},
             { symbol: "He", name: "Helium", atomicNumber: 2, category: "noble-gas",
               cosmicOrigin: "Big Bang", originColor: "#FFD700",
@@ -336,10 +336,13 @@
               chemistryInfo: "Noble gas with complete electron shell, chemically inert. Does not form compounds under normal conditions. Lowest boiling point (-269°C). Used in balloons, diving, and cryogenics.",
               physicsInfo: "Electron configuration: 1s². Isotopes: ⁴He (99.999863%), ³He (0.000137%). Atomic mass: 4.003 u. Ionization energy: 24.6 eV (highest of all elements).",
               spectralLines: [
-                { wavelength: 587.6, intensity: 1.0, transition: "3s→2p (D-line)" },
-                { wavelength: 667.8, intensity: 0.3, transition: "3d→2p" },
-                { wavelength: 501.6, intensity: 0.4, transition: "3s→2p" },
-                { wavelength: 447.1, intensity: 0.2, transition: "4d→2p" }
+                { wavelength: 447.1, intensity: 0.5, transition: "4d→2p (blue)" },
+                { wavelength: 471.3, intensity: 0.6, transition: "4s→2p (blue)" },
+                { wavelength: 492.2, intensity: 0.4, transition: "4d→2p (cyan)" },
+                { wavelength: 501.6, intensity: 0.7, transition: "3s→2p (green)" },
+                { wavelength: 587.6, intensity: 1.0, transition: "3s→2p (D-line, yellow)" },
+                { wavelength: 667.8, intensity: 0.8, transition: "3d→2p (red)" },
+                { wavelength: 706.5, intensity: 0.6, transition: "3s→2p (deep red)" }
             ]},
             { symbol: "Li", name: "Lithium", atomicNumber: 3, category: "alkali-metal",
               cosmicOrigin: "Cosmic Ray & Dying Stars", originColor: "#9370DB",
@@ -347,8 +350,8 @@
               chemistryInfo: "Highly reactive alkali metal, stored in oil. Forms ionic compounds with halogens. Lightest metal and least dense solid. Used in rechargeable batteries and psychiatric medication.",
               physicsInfo: "Electron configuration: [He] 2s¹. Isotopes: ⁷Li (92.5%), ⁶Li (7.5%). Atomic mass: 6.94 u. Shells: 2, 1.",
               spectralLines: [
-                { wavelength: 670.8, intensity: 1.0, transition: "2p→2s (D-line)" },
-                { wavelength: 610.4, intensity: 0.3, transition: "3d→2p" }
+                { wavelength: 610.4, intensity: 0.5, transition: "3d→2p (orange)" },
+                { wavelength: 670.8, intensity: 1.0, transition: "2p→2s (D-line, crimson red)" }
             ]},
             { symbol: "C", name: "Carbon", atomicNumber: 6, category: "nonmetal",
               cosmicOrigin: "Dying Low Mass Stars", originColor: "#FF6B9D",
@@ -356,9 +359,10 @@
               chemistryInfo: "Basis of organic chemistry, forms 4 covalent bonds. Exists as diamond, graphite, graphene, and fullerenes. Essential for all known life. Forms millions of compounds.",
               physicsInfo: "Electron configuration: [He] 2s² 2p². Isotopes: ¹²C (98.93%), ¹³C (1.07%), ¹⁴C (trace, radioactive). Atomic mass: 12.011 u. Shells: 2, 4.",
               spectralLines: [
-                { wavelength: 247.9, intensity: 1.0, transition: "2p→2s" },
-                { wavelength: 426.7, intensity: 0.4, transition: "3d→2p" },
-                { wavelength: 538.0, intensity: 0.3, transition: "3p→2s" }
+                { wavelength: 247.9, intensity: 1.0, transition: "2p→2s (UV)" },
+                { wavelength: 426.7, intensity: 0.5, transition: "3d→2p (blue)" },
+                { wavelength: 538.0, intensity: 0.4, transition: "3p→2s (green)" },
+                { wavelength: 658.8, intensity: 0.3, transition: "3d→2p (red)" }
             ]},
             { symbol: "N", name: "Nitrogen", atomicNumber: 7, category: "nonmetal",
               cosmicOrigin: "Dying Low Mass Stars", originColor: "#FF6B9D",
@@ -366,9 +370,10 @@
               chemistryInfo: "Diatomic gas (N₂) with triple bond, very stable. Essential for proteins and DNA. Forms nitrates and ammonia. Makes up 78% of Earth's atmosphere.",
               physicsInfo: "Electron configuration: [He] 2s² 2p³. Isotopes: ¹⁴N (99.636%), ¹⁵N (0.364%). Atomic mass: 14.007 u. Shells: 2, 5.",
               spectralLines: [
-                { wavelength: 399.5, intensity: 0.8, transition: "3p→3s" },
-                { wavelength: 500.5, intensity: 0.5, transition: "3d→3p" },
-                { wavelength: 567.6, intensity: 0.3, transition: "4s→3p" }
+                { wavelength: 399.5, intensity: 0.8, transition: "3p→3s (violet)" },
+                { wavelength: 500.5, intensity: 0.6, transition: "3d→3p (cyan)" },
+                { wavelength: 567.6, intensity: 0.5, transition: "4s→3p (yellow-green)" },
+                { wavelength: 648.2, intensity: 0.4, transition: "3d→3p (red)" }
             ]},
             { symbol: "O", name: "Oxygen", atomicNumber: 8, category: "nonmetal",
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
@@ -376,9 +381,9 @@
               chemistryInfo: "Highly reactive, forms oxides with most elements. Essential for respiration. Exists as O₂ and O₃ (ozone). Second most electronegative element after fluorine.",
               physicsInfo: "Electron configuration: [He] 2s² 2p⁴. Isotopes: ¹⁶O (99.757%), ¹⁸O (0.205%), ¹⁷O (0.038%). Atomic mass: 15.999 u. Shells: 2, 6.",
               spectralLines: [
-                { wavelength: 777.4, intensity: 1.0, transition: "3p→3s" },
-                { wavelength: 844.6, intensity: 0.7, transition: "3d→3p" },
-                { wavelength: 615.8, intensity: 0.4, transition: "4s→3p" }
+                { wavelength: 615.8, intensity: 0.5, transition: "4s→3p (orange)" },
+                { wavelength: 777.4, intensity: 1.0, transition: "3p→3s (near-IR, red)" },
+                { wavelength: 844.6, intensity: 0.8, transition: "3d→3p (near-IR)" }
             ]},
             { symbol: "Na", name: "Sodium", atomicNumber: 11, category: "alkali-metal",
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
@@ -396,11 +401,13 @@
               chemistryInfo: "Transition metal, forms Fe²⁺ and Fe³⁺ ions. Essential for hemoglobin in blood. Most common element on Earth by mass. Rusts in presence of oxygen and water.",
               physicsInfo: "Electron configuration: [Ar] 3d⁶ 4s². Isotopes: ⁵⁶Fe (91.754%), ⁵⁴Fe (5.845%), ⁵⁷Fe (2.119%), ⁵⁸Fe (0.282%). Atomic mass: 55.845 u. Shells: 2, 8, 14, 2.",
               spectralLines: [
-                { wavelength: 438.4, intensity: 0.9, transition: "3d→3p" },
-                { wavelength: 440.5, intensity: 0.8, transition: "3d→3p" },
-                { wavelength: 495.8, intensity: 0.6, transition: "4s→3d" },
-                { wavelength: 526.9, intensity: 0.7, transition: "3d→3p" },
-                { wavelength: 532.8, intensity: 0.5, transition: "3d→3p" }
+                { wavelength: 385.9, intensity: 0.7, transition: "3d→4s (violet)" },
+                { wavelength: 404.6, intensity: 0.8, transition: "3d→4s (violet)" },
+                { wavelength: 438.4, intensity: 1.0, transition: "3d→4s (blue)" },
+                { wavelength: 440.5, intensity: 0.9, transition: "3d→4s (blue)" },
+                { wavelength: 495.8, intensity: 0.7, transition: "4s→3d (cyan)" },
+                { wavelength: 526.9, intensity: 0.8, transition: "3d→4s (green)" },
+                { wavelength: 532.8, intensity: 0.6, transition: "3d→4s (green)" }
             ]},
             { symbol: "Cu", name: "Copper", atomicNumber: 29, category: "transition-metal",
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
@@ -408,10 +415,13 @@
               chemistryInfo: "Excellent electrical and thermal conductor. Forms Cu⁺ and Cu²⁺ ions. Used in wiring, plumbing, and coins. Antimicrobial properties. Forms green patina (copper carbonate) when exposed to air.",
               physicsInfo: "Electron configuration: [Ar] 3d¹⁰ 4s¹. Isotopes: ⁶³Cu (69.15%), ⁶⁵Cu (30.85%). Atomic mass: 63.546 u. Shells: 2, 8, 18, 1.",
               spectralLines: [
-                { wavelength: 324.8, intensity: 1.0, transition: "4p→4s" },
-                { wavelength: 327.4, intensity: 0.9, transition: "4p→4s" },
-                { wavelength: 510.6, intensity: 0.4, transition: "4d→4p" },
-                { wavelength: 521.8, intensity: 0.5, transition: "4d→4p" }
+                { wavelength: 324.8, intensity: 1.0, transition: "4p→4s (UV)" },
+                { wavelength: 327.4, intensity: 0.9, transition: "4p→4s (UV)" },
+                { wavelength: 465.1, intensity: 0.6, transition: "4d→4p (blue)" },
+                { wavelength: 510.6, intensity: 0.8, transition: "4d→4p (cyan-green)" },
+                { wavelength: 515.3, intensity: 0.7, transition: "4d→4p (cyan-green)" },
+                { wavelength: 521.8, intensity: 0.9, transition: "4d→4p (green)" },
+                { wavelength: 578.2, intensity: 0.5, transition: "4d→4p (yellow)" }
             ]},
             { symbol: "Au", name: "Gold", atomicNumber: 79, category: "transition-metal",
               cosmicOrigin: "Merging Neutron Stars", originColor: "#FF4500",
@@ -419,9 +429,12 @@
               chemistryInfo: "Noble metal, highly unreactive. Does not tarnish or corrode. Forms Au⁺ and Au³⁺ ions. Used in jewelry, electronics, and medicine. Excellent conductor and highly malleable.",
               physicsInfo: "Electron configuration: [Xe] 4f¹⁴ 5d¹⁰ 6s¹. Isotope: ¹⁹⁷Au (100%). Atomic mass: 196.967 u. Shells: 2, 8, 18, 32, 18, 1.",
               spectralLines: [
-                { wavelength: 267.6, intensity: 1.0, transition: "6p→6s" },
-                { wavelength: 312.3, intensity: 0.7, transition: "6p→6s" },
-                { wavelength: 479.3, intensity: 0.3, transition: "6d→6p" }
+                { wavelength: 267.6, intensity: 0.8, transition: "6p→6s (UV)" },
+                { wavelength: 312.3, intensity: 0.6, transition: "6p→6s (UV)" },
+                { wavelength: 479.3, intensity: 0.7, transition: "6d→6p" },
+                { wavelength: 523.0, intensity: 0.8, transition: "6p→6s (emerald green)" },
+                { wavelength: 584.0, intensity: 1.0, transition: "6p→6s (bright yellow)" },
+                { wavelength: 628.0, intensity: 0.9, transition: "6p→6s (red)" }
             ]},
             // Period 2 continued
             { symbol: "Be", name: "Beryllium", atomicNumber: 4, category: "alkaline-earth", row: 2, col: 2,
@@ -429,341 +442,654 @@
               astronomyInfo: "Created by cosmic ray spallation when high-energy particles collide with heavier elements.",
               chemistryInfo: "Alkaline earth metal, forms strong covalent bonds. Toxic and carcinogenic. Used in aerospace alloys and X-ray windows. Forms Be²⁺ ions.",
               physicsInfo: "Electron configuration: [He] 2s². Isotope: ⁹Be (100%). Atomic mass: 9.012 u. Shells: 2, 2.",
-              spectralLines: [{ wavelength: 234.9, intensity: 1.0, transition: "2p→2s" }, { wavelength: 313.0, intensity: 0.4, transition: "3s→2p" }]},
+              spectralLines: [
+                { wavelength: 234.9, intensity: 1.0, transition: "2p→2s (UV)" },
+                { wavelength: 313.0, intensity: 0.5, transition: "3s→2p (UV)" },
+                { wavelength: 332.1, intensity: 0.4, transition: "3p→2s (UV)" },
+                { wavelength: 457.3, intensity: 0.3, transition: "3d→2p (blue)" }
+            ]},
             { symbol: "B", name: "Boron", atomicNumber: 5, category: "metalloid", row: 2, col: 13,
               cosmicOrigin: "Cosmic Ray Fission", originColor: "#9370DB",
               astronomyInfo: "Produced by cosmic ray spallation, making it one of the rarest elements in the universe.",
               chemistryInfo: "Metalloid with unique chemistry. Forms electron-deficient compounds. Essential for plant growth. Used in fiberglass and semiconductors.",
               physicsInfo: "Electron configuration: [He] 2s² 2p¹. Isotopes: ¹¹B (80.1%), ¹⁰B (19.9%). Atomic mass: 10.81 u. Shells: 2, 3.",
-              spectralLines: [{ wavelength: 249.7, intensity: 1.0, transition: "2p→2s" }, { wavelength: 345.1, intensity: 0.3, transition: "3s→2p" }]},
+              spectralLines: [
+                { wavelength: 249.7, intensity: 1.0, transition: "2p→2s (UV)" },
+                { wavelength: 345.1, intensity: 0.4, transition: "3s→2p (UV)" },
+                { wavelength: 412.2, intensity: 0.3, transition: "3p→3s (violet)" },
+                { wavelength: 518.0, intensity: 0.3, transition: "3d→2p (green)" }
+            ]},
             { symbol: "F", name: "Fluorine", atomicNumber: 9, category: "halogen", row: 2, col: 17,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Created in dying stars and supernovae explosions.",
               chemistryInfo: "Most electronegative and reactive element. Forms fluorides with all elements except He, Ne, Ar. Used in toothpaste (fluoride) and Teflon. Highly toxic as F₂ gas.",
               physicsInfo: "Electron configuration: [He] 2s² 2p⁵. Isotope: ¹⁹F (100%). Atomic mass: 18.998 u. Shells: 2, 7.",
-              spectralLines: [{ wavelength: 685.6, intensity: 0.8, transition: "3p→3s" }, { wavelength: 690.2, intensity: 0.6, transition: "3d→3p" }]},
+              spectralLines: [
+                { wavelength: 624.0, intensity: 0.6, transition: "3p→3s (red)" },
+                { wavelength: 685.6, intensity: 0.9, transition: "3p→3s (red)" },
+                { wavelength: 690.2, intensity: 0.7, transition: "3d→3p (red)" },
+                { wavelength: 739.9, intensity: 0.8, transition: "3p→3s (red)" }
+            ]},
             { symbol: "Ne", name: "Neon", atomicNumber: 10, category: "noble-gas", row: 2, col: 18,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Forged in massive stars through carbon burning, released in supernovae.",
               chemistryInfo: "Noble gas, chemically inert. No known stable compounds. Used in neon signs (red-orange glow), lasers, and cryogenic refrigeration.",
               physicsInfo: "Electron configuration: [He] 2s² 2p⁶. Isotopes: ²⁰Ne (90.48%), ²²Ne (9.25%), ²¹Ne (0.27%). Atomic mass: 20.180 u. Shells: 2, 8.",
-              spectralLines: [{ wavelength: 640.2, intensity: 1.0, transition: "3p→3s" }, { wavelength: 585.2, intensity: 0.7, transition: "3s→2p" }]},
+              spectralLines: [
+                { wavelength: 585.2, intensity: 0.8, transition: "3s→2p (yellow)" },
+                { wavelength: 614.3, intensity: 0.9, transition: "3p→3s (orange)" },
+                { wavelength: 640.2, intensity: 1.0, transition: "3p→3s (red-orange)" },
+                { wavelength: 703.2, intensity: 0.7, transition: "3p→3s (deep red)" }
+            ]},
             // Period 3
             { symbol: "Mg", name: "Magnesium", atomicNumber: 12, category: "alkaline-earth", row: 3, col: 2,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Created in massive stars and scattered by supernovae. Essential for chlorophyll in plants.",
               chemistryInfo: "Alkaline earth metal, burns with brilliant white light. Forms Mg²⁺ ions. Essential for chlorophyll and over 300 enzymes. Reacts with acids. Used in alloys, fireworks, and as a dietary supplement.",
               physicsInfo: "Electron configuration: [Ne] 3s². Isotopes: ²⁴Mg (78.99%), ²⁶Mg (11.01%), ²⁵Mg (10.00%). Atomic mass: 24.305 u. Shells: 2, 8, 2.",
-              spectralLines: [{ wavelength: 518.4, intensity: 1.0, transition: "3p→3s" }, { wavelength: 383.8, intensity: 0.5, transition: "4s→3p" }]},
+              spectralLines: [
+                { wavelength: 383.8, intensity: 0.6, transition: "4s→3p (violet)" },
+                { wavelength: 516.7, intensity: 0.8, transition: "3p→3s (green)" },
+                { wavelength: 517.3, intensity: 0.7, transition: "3p→3s (green)" },
+                { wavelength: 518.4, intensity: 1.0, transition: "3p→3s (green)" }
+            ]},
             { symbol: "Al", name: "Aluminum", atomicNumber: 13, category: "metal", row: 3, col: 13,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Produced in supernovae, aluminum is the most abundant metal in Earth's crust.",
               chemistryInfo: "Post-transition metal, lightweight and corrosion-resistant. Forms Al³⁺ ions. Amphoteric (reacts with both acids and bases). Used in aircraft, cans, foil, and construction. Third most abundant element in Earth's crust.",
               physicsInfo: "Electron configuration: [Ne] 3s² 3p¹. Isotope: ²⁷Al (100%). Atomic mass: 26.982 u. Shells: 2, 8, 3.",
-              spectralLines: [{ wavelength: 396.2, intensity: 1.0, transition: "3p→3s" }, { wavelength: 394.4, intensity: 0.9, transition: "4s→3p" }]},
+              spectralLines: [
+                { wavelength: 308.2, intensity: 0.8, transition: "3p→3s (UV)" },
+                { wavelength: 309.3, intensity: 0.7, transition: "3p→3s (UV)" },
+                { wavelength: 394.4, intensity: 1.0, transition: "4s→3p (violet)" },
+                { wavelength: 396.2, intensity: 0.9, transition: "3p→3s (violet)" }
+            ]},
             { symbol: "Si", name: "Silicon", atomicNumber: 14, category: "metalloid", row: 3, col: 14,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Created in massive stars, silicon is the basis of rocks and computer chips.",
               chemistryInfo: "Metalloid, forms covalent bonds. Basis of silicate minerals and glass. Essential for semiconductors and computer chips. Forms SiO₂ (quartz, sand). Second most abundant element in Earth's crust after oxygen.",
               physicsInfo: "Electron configuration: [Ne] 3s² 3p². Isotopes: ²⁸Si (92.23%), ²⁹Si (4.67%), ³⁰Si (3.10%). Atomic mass: 28.085 u. Shells: 2, 8, 4.",
-              spectralLines: [{ wavelength: 390.6, intensity: 1.0, transition: "3p→3s" }, { wavelength: 288.2, intensity: 0.6, transition: "4s→3p" }]},
+              spectralLines: [
+                { wavelength: 288.2, intensity: 0.7, transition: "4s→3p (UV)" },
+                { wavelength: 390.6, intensity: 1.0, transition: "3p→3s (violet)" },
+                { wavelength: 505.6, intensity: 0.5, transition: "4p→4s (cyan)" },
+                { wavelength: 634.7, intensity: 0.4, transition: "4p→4s (red)" }
+            ]},
             { symbol: "P", name: "Phosphorus", atomicNumber: 15, category: "nonmetal", row: 3, col: 15,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Essential for DNA and ATP, created in supernovae explosions.",
               chemistryInfo: "Highly reactive nonmetal, exists as white, red, and black allotropes. Essential for DNA, RNA, and ATP. Forms phosphates. Used in fertilizers, matches, and detergents. Never found free in nature.",
               physicsInfo: "Electron configuration: [Ne] 3s² 3p³. Isotope: ³¹P (100%). Atomic mass: 30.974 u. Shells: 2, 8, 5.",
-              spectralLines: [{ wavelength: 253.6, intensity: 1.0, transition: "3p→3s" }, { wavelength: 255.3, intensity: 0.8, transition: "4s→3p" }]},
+              spectralLines: [
+                { wavelength: 253.6, intensity: 1.0, transition: "3p→3s (UV)" },
+                { wavelength: 255.3, intensity: 0.9, transition: "4s→3p (UV)" },
+                { wavelength: 435.5, intensity: 0.5, transition: "4p→4s (blue)" },
+                { wavelength: 542.4, intensity: 0.4, transition: "4p→4s (green)" }
+            ]},
             { symbol: "S", name: "Sulfur", atomicNumber: 16, category: "nonmetal", row: 3, col: 16,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Forged in massive stars and released in supernova explosions.",
               chemistryInfo: "Nonmetal, forms S²⁻ ions and many compounds. Essential for proteins (cysteine, methionine). Forms sulfuric acid (H₂SO₄), the most produced industrial chemical. Gives rotten eggs their smell (H₂S). Used in vulcanizing rubber.",
               physicsInfo: "Electron configuration: [Ne] 3s² 3p⁴. Isotopes: ³²S (94.99%), ³⁴S (4.25%), ³³S (0.75%), ³⁶S (0.01%). Atomic mass: 32.06 u. Shells: 2, 8, 6.",
-              spectralLines: [{ wavelength: 469.4, intensity: 0.9, transition: "3p→3s" }, { wavelength: 545.4, intensity: 0.7, transition: "4s→3p" }]},
+              spectralLines: [
+                { wavelength: 469.4, intensity: 0.9, transition: "3p→3s (blue)" },
+                { wavelength: 545.4, intensity: 0.8, transition: "4s→3p (green)" },
+                { wavelength: 564.0, intensity: 0.7, transition: "4s→3p (yellow-green)" },
+                { wavelength: 921.3, intensity: 0.6, transition: "4p→4s (near-IR)" }
+            ]},
             { symbol: "Cl", name: "Chlorine", atomicNumber: 17, category: "halogen", row: 3, col: 17,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Created in supernovae, essential for life and common in Earth's oceans.",
               chemistryInfo: "Highly reactive halogen, toxic yellow-green gas as Cl₂. Forms Cl⁻ ions (chloride). Essential for stomach acid (HCl) and nerve function. Used in water purification, bleach, and PVC plastic. Found in table salt (NaCl).",
               physicsInfo: "Electron configuration: [Ne] 3s² 3p⁵. Isotopes: ³⁵Cl (75.76%), ³⁷Cl (24.24%). Atomic mass: 35.45 u. Shells: 2, 8, 7.",
-              spectralLines: [{ wavelength: 479.5, intensity: 0.8, transition: "3p→3s" }, { wavelength: 725.7, intensity: 0.6, transition: "4s→3p" }]},
+              spectralLines: [
+                { wavelength: 479.5, intensity: 0.8, transition: "3p→3s (blue)" },
+                { wavelength: 542.3, intensity: 0.7, transition: "4s→3p (green)" },
+                { wavelength: 725.7, intensity: 0.7, transition: "4s→3p (red)" },
+                { wavelength: 837.6, intensity: 0.6, transition: "4p→4s (near-IR)" }
+            ]},
             { symbol: "Ar", name: "Argon", atomicNumber: 18, category: "noble-gas", row: 3, col: 18,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Produced in supernovae, argon makes up about 1% of Earth's atmosphere.",
               chemistryInfo: "Noble gas, chemically inert with complete electron shell. No stable compounds. Third most abundant gas in Earth's atmosphere (0.93%). Used in welding, light bulbs, and as protective atmosphere for reactive materials.",
               physicsInfo: "Electron configuration: [Ne] 3s² 3p⁶. Isotopes: ⁴⁰Ar (99.60%), ³⁶Ar (0.34%), ³⁸Ar (0.06%). Atomic mass: 39.948 u. Shells: 2, 8, 8.",
-              spectralLines: [{ wavelength: 696.5, intensity: 1.0, transition: "4p→4s" }, { wavelength: 706.7, intensity: 0.8, transition: "4p→4s" }]},
+              spectralLines: [
+                { wavelength: 415.9, intensity: 0.7, transition: "4p→4s (violet)" },
+                { wavelength: 420.1, intensity: 0.6, transition: "4p→4s (violet)" },
+                { wavelength: 696.5, intensity: 1.0, transition: "4p→4s (red)" },
+                { wavelength: 706.7, intensity: 0.9, transition: "4p→4s (red)" },
+                { wavelength: 738.4, intensity: 0.8, transition: "4p→4s (red)" },
+                { wavelength: 763.5, intensity: 0.7, transition: "4p→4s (red)" }
+            ]},
             // Period 4
             { symbol: "K", name: "Potassium", atomicNumber: 19, category: "alkali-metal", row: 4, col: 1,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Created in supernovae, essential for nerve function in living organisms.",
               chemistryInfo: "Highly reactive alkali metal, soft enough to cut with a knife. Forms K⁺ ions. Essential for nerve impulses, muscle contraction, and heart function. Reacts violently with water. Found in bananas and used in fertilizers.",
               physicsInfo: "Electron configuration: [Ar] 4s¹. Isotopes: ³⁹K (93.26%), ⁴¹K (6.73%), ⁴⁰K (0.01%, radioactive). Atomic mass: 39.098 u. Shells: 2, 8, 8, 1.",
-              spectralLines: [{ wavelength: 766.5, intensity: 1.0, transition: "4p→4s" }, { wavelength: 769.9, intensity: 0.9, transition: "4p→4s" }]},
+              spectralLines: [
+                { wavelength: 404.4, intensity: 0.5, transition: "5p→4s (violet)" },
+                { wavelength: 766.5, intensity: 1.0, transition: "4p→4s (red)" },
+                { wavelength: 769.9, intensity: 0.9, transition: "4p→4s (red)" }
+            ]},
             { symbol: "Ca", name: "Calcium", atomicNumber: 20, category: "alkaline-earth", row: 4, col: 2,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "The calcium in your bones was created in exploding stars billions of years ago.",
               chemistryInfo: "Alkaline earth metal, forms Ca²⁺ ions. Essential for bones, teeth, and muscle contraction. Fifth most abundant element in Earth's crust. Reacts with water. Found in limestone (CaCO₃), chalk, and marble.",
               physicsInfo: "Electron configuration: [Ar] 4s². Isotopes: ⁴⁰Ca (96.94%), ⁴⁴Ca (2.09%), ⁴²Ca (0.65%), ⁴⁸Ca (0.19%), ⁴³Ca (0.14%), ⁴⁶Ca (0.004%). Atomic mass: 40.078 u. Shells: 2, 8, 8, 2.",
-              spectralLines: [{ wavelength: 422.7, intensity: 1.0, transition: "4p→4s" }, { wavelength: 393.4, intensity: 0.7, transition: "5s→4p" }]},
+              spectralLines: [
+                { wavelength: 393.4, intensity: 0.8, transition: "5s→4p (violet)" },
+                { wavelength: 396.8, intensity: 0.7, transition: "4p→4s (violet)" },
+                { wavelength: 422.7, intensity: 1.0, transition: "4p→4s (blue-violet)" },
+                { wavelength: 445.5, intensity: 0.6, transition: "4p→4s (blue)" },
+                { wavelength: 558.9, intensity: 0.5, transition: "4p→4s (green)" },
+                { wavelength: 643.9, intensity: 0.7, transition: "4p→4s (red)" }
+            ]},
             { symbol: "Sc", name: "Scandium", atomicNumber: 21, category: "transition-metal", row: 4, col: 3,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Rare element created in supernovae explosions.",
               chemistryInfo: "Transition metal, forms Sc³⁺ ions. Lightweight and strong. Used in aerospace alloys, baseball bats, and bicycle frames. Rare in Earth's crust. Tarnishes in air.",
               physicsInfo: "Electron configuration: [Ar] 3d¹ 4s². Isotope: ⁴⁵Sc (100%). Atomic mass: 44.956 u. Shells: 2, 8, 9, 2.",
-              spectralLines: [{ wavelength: 402.4, intensity: 0.9, transition: "3d→4s" }, { wavelength: 390.7, intensity: 0.6, transition: "4p→4s" }]},
+              spectralLines: [
+                { wavelength: 390.7, intensity: 0.7, transition: "4p→4s (violet)" },
+                { wavelength: 402.4, intensity: 0.9, transition: "3d→4s (violet)" },
+                { wavelength: 402.0, intensity: 0.8, transition: "3d→4s (violet)" },
+                { wavelength: 424.7, intensity: 1.0, transition: "3d→4s (blue-violet)" },
+                { wavelength: 431.4, intensity: 0.6, transition: "3d→4s (blue)" }
+            ]},
             { symbol: "Ti", name: "Titanium", atomicNumber: 22, category: "transition-metal", row: 4, col: 4,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Forged in supernovae, titanium is strong, light, and corrosion-resistant.",
               chemistryInfo: "Transition metal, forms Ti²⁺, Ti³⁺, and Ti⁴⁺ ions. Strong as steel but 45% lighter. Highly corrosion-resistant. Used in aircraft, spacecraft, medical implants, and white paint (TiO₂).",
               physicsInfo: "Electron configuration: [Ar] 3d² 4s². Isotopes: ⁴⁸Ti (73.72%), ⁴⁶Ti (8.25%), ⁴⁷Ti (7.44%), ⁴⁹Ti (5.41%), ⁵⁰Ti (5.18%). Atomic mass: 47.867 u. Shells: 2, 8, 10, 2.",
-              spectralLines: [{ wavelength: 498.2, intensity: 0.9, transition: "3d→4s" }, { wavelength: 453.3, intensity: 0.7, transition: "4p→3d" }]},
+              spectralLines: [
+                { wavelength: 399.9, intensity: 0.7, transition: "3d→4s (violet)" },
+                { wavelength: 453.3, intensity: 0.8, transition: "4p→3d (blue)" },
+                { wavelength: 498.2, intensity: 1.0, transition: "3d→4s (cyan)" },
+                { wavelength: 499.1, intensity: 0.9, transition: "3d→4s (cyan)" },
+                { wavelength: 521.0, intensity: 0.6, transition: "3d→4s (green)" }
+            ]},
             { symbol: "V", name: "Vanadium", atomicNumber: 23, category: "transition-metal", row: 4, col: 5,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Created in supernovae, used in steel alloys for strength.",
               chemistryInfo: "Transition metal, forms V²⁺, V³⁺, V⁴⁺, and V⁵⁺ ions. Adds strength and toughness to steel. Used in tools, springs, and jet engines. Named after Vanadis, Norse goddess of beauty, for its colorful compounds.",
               physicsInfo: "Electron configuration: [Ar] 3d³ 4s². Isotopes: ⁵¹V (99.75%), ⁵⁰V (0.25%, radioactive). Atomic mass: 50.942 u. Shells: 2, 8, 11, 2.",
-              spectralLines: [{ wavelength: 437.9, intensity: 0.8, transition: "3d→4s" }, { wavelength: 411.2, intensity: 0.6, transition: "4p→3d" }]},
+              spectralLines: [
+                { wavelength: 411.2, intensity: 0.7, transition: "4p→3d (violet)" },
+                { wavelength: 437.9, intensity: 1.0, transition: "3d→4s (blue)" },
+                { wavelength: 438.5, intensity: 0.9, transition: "3d→4s (blue)" },
+                { wavelength: 440.8, intensity: 0.8, transition: "3d→4s (blue)" },
+                { wavelength: 506.6, intensity: 0.6, transition: "3d→4s (cyan)" }
+            ]},
             { symbol: "Cr", name: "Chromium", atomicNumber: 24, category: "transition-metal", row: 4, col: 6,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Produced in supernovae, gives rubies their red color.",
               chemistryInfo: "Transition metal, forms Cr²⁺, Cr³⁺, and Cr⁶⁺ ions. Extremely hard and corrosion-resistant. Used in stainless steel and chrome plating. Gives emeralds and rubies their colors. Essential trace element for glucose metabolism.",
               physicsInfo: "Electron configuration: [Ar] 3d⁵ 4s¹. Isotopes: ⁵²Cr (83.79%), ⁵³Cr (9.50%), ⁵⁰Cr (4.35%), ⁵⁴Cr (2.36%). Atomic mass: 51.996 u. Shells: 2, 8, 13, 1.",
-              spectralLines: [{ wavelength: 425.4, intensity: 1.0, transition: "3d→4s" }, { wavelength: 427.5, intensity: 0.9, transition: "4p→3d" }]},
+              spectralLines: [
+                { wavelength: 357.9, intensity: 0.8, transition: "3d→4s (UV)" },
+                { wavelength: 425.4, intensity: 1.0, transition: "3d→4s (blue-violet)" },
+                { wavelength: 427.5, intensity: 0.9, transition: "4p→3d (blue-violet)" },
+                { wavelength: 520.5, intensity: 0.6, transition: "4p→3d (green)" },
+                { wavelength: 520.8, intensity: 0.6, transition: "4p→3d (green)" }
+            ]},
             { symbol: "Mn", name: "Manganese", atomicNumber: 25, category: "transition-metal", row: 4, col: 7,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Created in supernovae, essential for photosynthesis in plants.",
               chemistryInfo: "Transition metal, forms Mn²⁺, Mn³⁺, Mn⁴⁺, and Mn⁷⁺ ions. Essential for photosynthesis and bone formation. Used in steel production and batteries. Permanganate (MnO₄⁻) is a strong oxidizer used in water treatment.",
               physicsInfo: "Electron configuration: [Ar] 3d⁵ 4s². Isotope: ⁵⁵Mn (100%). Atomic mass: 54.938 u. Shells: 2, 8, 13, 2.",
-              spectralLines: [{ wavelength: 403.1, intensity: 1.0, transition: "3d→4s" }, { wavelength: 403.3, intensity: 0.9, transition: "4p→3d" }]},
+              spectralLines: [
+                { wavelength: 403.1, intensity: 1.0, transition: "3d→4s (violet)" },
+                { wavelength: 403.3, intensity: 0.9, transition: "4p→3d (violet)" },
+                { wavelength: 403.4, intensity: 0.9, transition: "3d→4s (violet)" },
+                { wavelength: 420.4, intensity: 0.7, transition: "3d→4s (violet)" },
+                { wavelength: 475.4, intensity: 0.6, transition: "3d→4s (blue)" }
+            ]},
             { symbol: "Co", name: "Cobalt", atomicNumber: 27, category: "transition-metal", row: 4, col: 9,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Forged in supernovae, essential for vitamin B12.",
               chemistryInfo: "Transition metal, forms Co²⁺ and Co³⁺ ions. Essential component of vitamin B12. Used in rechargeable batteries, magnets, and blue pigments. Ferromagnetic like iron and nickel.",
               physicsInfo: "Electron configuration: [Ar] 3d⁷ 4s². Isotope: ⁵⁹Co (100%). Atomic mass: 58.933 u. Shells: 2, 8, 15, 2.",
-              spectralLines: [{ wavelength: 345.4, intensity: 0.9, transition: "3d→4s" }, { wavelength: 340.5, intensity: 0.8, transition: "4p→3d" }]},
+              spectralLines: [
+                { wavelength: 340.5, intensity: 0.9, transition: "4p→3d (UV)" },
+                { wavelength: 345.4, intensity: 1.0, transition: "3d→4s (UV)" },
+                { wavelength: 350.2, intensity: 0.8, transition: "3d→4s (UV)" },
+                { wavelength: 412.1, intensity: 0.6, transition: "3d→4s (violet)" },
+                { wavelength: 535.4, intensity: 0.5, transition: "3d→4s (green)" }
+            ]},
             { symbol: "Ni", name: "Nickel", atomicNumber: 28, category: "transition-metal", row: 4, col: 10,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Created in supernovae, abundant in Earth's core and meteorites.",
               chemistryInfo: "Transition metal, forms Ni²⁺ and Ni³⁺ ions. Corrosion-resistant and ferromagnetic. Used in stainless steel, coins, rechargeable batteries, and catalysts. Major component of Earth's core. Can cause allergic reactions.",
               physicsInfo: "Electron configuration: [Ar] 3d⁸ 4s². Isotopes: ⁵⁸Ni (68.08%), ⁶⁰Ni (26.22%), ⁶²Ni (3.63%), ⁶¹Ni (1.14%), ⁶⁴Ni (0.93%). Atomic mass: 58.693 u. Shells: 2, 8, 16, 2.",
-              spectralLines: [{ wavelength: 352.5, intensity: 1.0, transition: "3d→4s" }, { wavelength: 341.5, intensity: 0.8, transition: "4p→3d" }]},
+              spectralLines: [
+                { wavelength: 341.5, intensity: 0.9, transition: "4p→3d (UV)" },
+                { wavelength: 344.6, intensity: 0.8, transition: "4p→3d (UV)" },
+                { wavelength: 349.3, intensity: 0.7, transition: "4p→3d (UV)" },
+                { wavelength: 352.5, intensity: 1.0, transition: "3d→4s (UV)" },
+                { wavelength: 508.5, intensity: 0.5, transition: "4d→4p (cyan)" }
+            ]},
             { symbol: "Zn", name: "Zinc", atomicNumber: 30, category: "transition-metal", row: 4, col: 12,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Produced in supernovae, essential for immune function and wound healing.",
               chemistryInfo: "Transition metal, forms Zn²⁺ ions. Essential for immune system, wound healing, and DNA synthesis. Used in galvanizing steel, brass alloys, and batteries. Found in oysters, meat, and beans.",
               physicsInfo: "Electron configuration: [Ar] 3d¹⁰ 4s². Isotopes: ⁶⁴Zn (49.17%), ⁶⁶Zn (27.73%), ⁶⁸Zn (18.45%), ⁶⁷Zn (4.04%), ⁷⁰Zn (0.61%). Atomic mass: 65.38 u. Shells: 2, 8, 18, 2.",
-              spectralLines: [{ wavelength: 213.9, intensity: 1.0, transition: "4p→4s" }, { wavelength: 481.1, intensity: 0.4, transition: "5s→4p" }]},
+              spectralLines: [
+                { wavelength: 213.9, intensity: 1.0, transition: "4p→4s (UV)" },
+                { wavelength: 330.3, intensity: 0.7, transition: "5s→4p (UV)" },
+                { wavelength: 468.0, intensity: 0.5, transition: "5p→5s (blue)" },
+                { wavelength: 472.2, intensity: 0.5, transition: "5p→5s (blue)" },
+                { wavelength: 481.1, intensity: 0.6, transition: "5s→4p (blue)" },
+                { wavelength: 636.2, intensity: 0.4, transition: "5p→5s (red)" }
+            ]},
             { symbol: "Ga", name: "Gallium", atomicNumber: 31, category: "metal", row: 4, col: 13,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Created in supernovae, melts in your hand at 30°C.",
               chemistryInfo: "Post-transition metal, forms Ga³⁺ ions. Melts at 29.76°C (can melt in your hand). Used in semiconductors, LEDs, and solar panels. Liquid over a wide temperature range. Non-toxic.",
               physicsInfo: "Electron configuration: [Ar] 3d¹⁰ 4s² 4p¹. Isotopes: ⁶⁹Ga (60.11%), ⁷¹Ga (39.89%). Atomic mass: 69.723 u. Shells: 2, 8, 18, 3.",
-              spectralLines: [{ wavelength: 417.2, intensity: 1.0, transition: "4p→4s" }, { wavelength: 403.3, intensity: 0.7, transition: "5s→4p" }]},
+              spectralLines: [
+                { wavelength: 294.4, intensity: 0.8, transition: "4p→4s (UV)" },
+                { wavelength: 403.3, intensity: 0.9, transition: "5s→4p (violet)" },
+                { wavelength: 417.2, intensity: 1.0, transition: "4p→4s (violet)" },
+                { wavelength: 641.3, intensity: 0.6, transition: "5p→5s (red)" }
+            ]},
             { symbol: "Ge", name: "Germanium", atomicNumber: 32, category: "metalloid", row: 4, col: 14,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Forged in supernovae, used in semiconductors and fiber optics.",
               chemistryInfo: "Metalloid, forms Ge²⁺ and Ge⁴⁺ ions. Important semiconductor used in transistors and fiber optics. Predicted by Mendeleev before its discovery. Brittle and silvery-white.",
               physicsInfo: "Electron configuration: [Ar] 3d¹⁰ 4s² 4p². Isotopes: ⁷⁴Ge (36.73%), ⁷²Ge (27.31%), ⁷⁰Ge (20.52%), ⁷³Ge (7.76%), ⁷⁶Ge (7.67%). Atomic mass: 72.630 u. Shells: 2, 8, 18, 4.",
-              spectralLines: [{ wavelength: 303.9, intensity: 0.9, transition: "4p→4s" }, { wavelength: 265.2, intensity: 0.7, transition: "5s→4p" }]},
+              spectralLines: [
+                { wavelength: 265.2, intensity: 0.8, transition: "5s→4p (UV)" },
+                { wavelength: 275.5, intensity: 0.7, transition: "5s→4p (UV)" },
+                { wavelength: 303.9, intensity: 1.0, transition: "4p→4s (UV)" },
+                { wavelength: 422.7, intensity: 0.5, transition: "5p→5s (blue-violet)" },
+                { wavelength: 468.6, intensity: 0.4, transition: "5p→5s (blue)" }
+            ]},
             { symbol: "As", name: "Arsenic", atomicNumber: 33, category: "metalloid", row: 4, col: 15,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Created in supernovae, infamous as a poison but essential in trace amounts.",
               chemistryInfo: "Metalloid, forms As³⁻, As³⁺, and As⁵⁺ ions. Infamous poison but essential in trace amounts. Used in semiconductors, wood preservatives, and pesticides. Forms toxic arsine gas (AsH₃).",
               physicsInfo: "Electron configuration: [Ar] 3d¹⁰ 4s² 4p³. Isotope: ⁷⁵As (100%). Atomic mass: 74.922 u. Shells: 2, 8, 18, 5.",
-              spectralLines: [{ wavelength: 228.8, intensity: 0.9, transition: "4p→4s" }, { wavelength: 234.9, intensity: 0.7, transition: "5s→4p" }]},
+              spectralLines: [
+                { wavelength: 228.8, intensity: 1.0, transition: "4p→4s (UV)" },
+                { wavelength: 234.9, intensity: 0.9, transition: "5s→4p (UV)" },
+                { wavelength: 278.0, intensity: 0.7, transition: "5s→4p (UV)" },
+                { wavelength: 286.0, intensity: 0.6, transition: "5s→4p (UV)" }
+            ]},
             { symbol: "Se", name: "Selenium", atomicNumber: 34, category: "nonmetal", row: 4, col: 16,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Produced in supernovae, essential for thyroid function.",
               chemistryInfo: "Nonmetal, forms Se²⁻ ions. Essential for thyroid function and antioxidant enzymes. Photoconductor used in photocopiers. Found in Brazil nuts, seafood, and meat. Toxic in large amounts.",
               physicsInfo: "Electron configuration: [Ar] 3d¹⁰ 4s² 4p⁴. Isotopes: ⁸⁰Se (49.61%), ⁷⁸Se (23.77%), ⁷⁶Se (9.37%), ⁸²Se (8.73%), ⁷⁷Se (7.63%), ⁷⁴Se (0.89%). Atomic mass: 78.971 u. Shells: 2, 8, 18, 6.",
-              spectralLines: [{ wavelength: 196.0, intensity: 1.0, transition: "4p→4s" }, { wavelength: 203.9, intensity: 0.8, transition: "5s→4p" }]},
+              spectralLines: [
+                { wavelength: 196.0, intensity: 1.0, transition: "4p→4s (UV)" },
+                { wavelength: 203.9, intensity: 0.9, transition: "5s→4p (UV)" },
+                { wavelength: 206.3, intensity: 0.8, transition: "5s→4p (UV)" },
+                { wavelength: 473.1, intensity: 0.5, transition: "5p→5s (blue)" }
+            ]},
             { symbol: "Br", name: "Bromine", atomicNumber: 35, category: "halogen", row: 4, col: 17,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Created in supernovae, one of only two liquid elements at room temperature.",
               chemistryInfo: "Halogen, forms Br⁻ ions. One of only two elements liquid at room temperature (with mercury). Reddish-brown and volatile. Used in flame retardants, fumigants, and photography. Toxic and corrosive.",
               physicsInfo: "Electron configuration: [Ar] 3d¹⁰ 4s² 4p⁵. Isotopes: ⁷⁹Br (50.69%), ⁸¹Br (49.31%). Atomic mass: 79.904 u. Shells: 2, 8, 18, 7.",
-              spectralLines: [{ wavelength: 470.5, intensity: 0.8, transition: "4p→4s" }, { wavelength: 478.6, intensity: 0.7, transition: "5s→4p" }]},
+              spectralLines: [
+                { wavelength: 470.5, intensity: 0.9, transition: "4p→4s (blue)" },
+                { wavelength: 478.6, intensity: 0.8, transition: "5s→4p (blue)" },
+                { wavelength: 481.7, intensity: 0.7, transition: "5s→4p (blue)" },
+                { wavelength: 827.2, intensity: 0.8, transition: "5p→5s (near-IR)" },
+                { wavelength: 889.0, intensity: 0.7, transition: "5p→5s (near-IR)" }
+            ]},
             { symbol: "Kr", name: "Krypton", atomicNumber: 36, category: "noble-gas", row: 4, col: 18,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Forged in supernovae, used in high-performance lighting.",
               chemistryInfo: "Noble gas, chemically inert. Forms very few compounds. Used in high-performance light bulbs, lasers, and flash lamps for high-speed photography. Produces bright white light when electrified.",
               physicsInfo: "Electron configuration: [Ar] 3d¹⁰ 4s² 4p⁶. Isotopes: ⁸⁴Kr (56.99%), ⁸⁶Kr (17.28%), ⁸²Kr (11.59%), ⁸³Kr (11.50%), ⁸⁰Kr (2.29%), ⁷⁸Kr (0.35%). Atomic mass: 83.798 u. Shells: 2, 8, 18, 8.",
-              spectralLines: [{ wavelength: 557.0, intensity: 1.0, transition: "5p→5s" }, { wavelength: 587.1, intensity: 0.8, transition: "5p→5s" }]},
+              spectralLines: [
+                { wavelength: 427.4, intensity: 0.7, transition: "5p→5s (blue)" },
+                { wavelength: 431.9, intensity: 0.6, transition: "5p→5s (blue)" },
+                { wavelength: 557.0, intensity: 1.0, transition: "5p→5s (green)" },
+                { wavelength: 587.1, intensity: 0.9, transition: "5p→5s (yellow)" },
+                { wavelength: 760.2, intensity: 0.8, transition: "5p→5s (red)" },
+                { wavelength: 810.4, intensity: 0.7, transition: "5p→5s (near-IR)" }
+            ]},
             // Period 5
             { symbol: "Rb", name: "Rubidium", atomicNumber: 37, category: "alkali-metal", row: 5, col: 1,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Created in supernovae, used in atomic clocks.",
               chemistryInfo: "Highly reactive alkali metal, forms Rb⁺ ions. Ignites spontaneously in air. Used in atomic clocks, photocells, and research. Second most electropositive element after cesium.",
               physicsInfo: "Electron configuration: [Kr] 5s¹. Isotopes: ⁸⁵Rb (72.17%), ⁸⁷Rb (27.83%, radioactive). Atomic mass: 85.468 u. Shells: 2, 8, 18, 8, 1.",
-              spectralLines: [{ wavelength: 780.0, intensity: 1.0, transition: "5p→5s" }, { wavelength: 794.8, intensity: 0.9, transition: "5p→5s" }]},
+              spectralLines: [
+                { wavelength: 420.2, intensity: 0.7, transition: "6p→5s (violet)" },
+                { wavelength: 421.6, intensity: 0.6, transition: "6p→5s (violet)" },
+                { wavelength: 780.0, intensity: 1.0, transition: "5p→5s (red)" },
+                { wavelength: 794.8, intensity: 0.9, transition: "5p→5s (red)" }
+            ]},
             { symbol: "Sr", name: "Strontium", atomicNumber: 38, category: "alkaline-earth", row: 5, col: 2,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
-              astronomyInfo: "Forged in supernovae, gives fireworks their red color.",
+              astronomyInfo: "Forged in supernovae, gives fireworks their brilliant red color.",
               chemistryInfo: "Alkaline earth metal, forms Sr²⁺ ions. Gives fireworks their brilliant red color. Chemically similar to calcium. Radioactive ⁹⁰Sr is a dangerous nuclear fallout product. Used in magnets and zinc refining.",
               physicsInfo: "Electron configuration: [Kr] 5s². Isotopes: ⁸⁸Sr (82.58%), ⁸⁶Sr (9.86%), ⁸⁷Sr (7.00%), ⁸⁴Sr (0.56%). Atomic mass: 87.62 u. Shells: 2, 8, 18, 8, 2.",
-              spectralLines: [{ wavelength: 460.7, intensity: 1.0, transition: "5p→5s" }, { wavelength: 407.8, intensity: 0.7, transition: "6s→5p" }]},
+              spectralLines: [
+                { wavelength: 407.8, intensity: 0.8, transition: "6s→5p (violet)" },
+                { wavelength: 421.6, intensity: 0.7, transition: "5p→5s (blue-violet)" },
+                { wavelength: 460.7, intensity: 1.0, transition: "5p→5s (blue)" },
+                { wavelength: 483.2, intensity: 0.6, transition: "5p→5s (blue)" },
+                { wavelength: 605.0, intensity: 0.7, transition: "5p→5s (orange)" },
+                { wavelength: 640.8, intensity: 0.8, transition: "5p→5s (red)" },
+                { wavelength: 687.8, intensity: 0.9, transition: "5p→5s (deep red)" }
+            ]},
             { symbol: "Y", name: "Yttrium", atomicNumber: 39, category: "transition-metal", row: 5, col: 3,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Created in supernovae, used in LEDs and superconductors.",
               chemistryInfo: "Transition metal, forms Y³⁺ ions. Used in LEDs, superconductors, and cancer treatment. Named after Ytterby, Sweden. Often found with lanthanides. Silvery-metallic and relatively stable in air.",
               physicsInfo: "Electron configuration: [Kr] 4d¹ 5s². Isotope: ⁸⁹Y (100%). Atomic mass: 88.906 u. Shells: 2, 8, 18, 9, 2.",
-              spectralLines: [{ wavelength: 407.7, intensity: 0.9, transition: "4d→5s" }, { wavelength: 371.0, intensity: 0.7, transition: "5p→5s" }]},
+              spectralLines: [
+                { wavelength: 371.0, intensity: 0.8, transition: "5p→5s (UV)" },
+                { wavelength: 407.7, intensity: 1.0, transition: "4d→5s (violet)" },
+                { wavelength: 412.8, intensity: 0.7, transition: "4d→5s (violet)" },
+                { wavelength: 437.5, intensity: 0.6, transition: "4d→5s (blue)" }
+            ]},
             { symbol: "Zr", name: "Zirconium", atomicNumber: 40, category: "transition-metal", row: 5, col: 4,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Produced in supernovae, extremely corrosion-resistant.",
               chemistryInfo: "Transition metal, forms Zr⁴⁺ ions. Extremely corrosion-resistant. Used in nuclear reactors, surgical instruments, and gemstones (cubic zirconia). Does not absorb neutrons, making it ideal for nuclear applications.",
               physicsInfo: "Electron configuration: [Kr] 4d² 5s². Isotopes: ⁹⁰Zr (51.45%), ⁹⁴Zr (17.38%), ⁹²Zr (17.15%), ⁹¹Zr (11.22%), ⁹⁶Zr (2.80%). Atomic mass: 91.224 u. Shells: 2, 8, 18, 10, 2.",
-              spectralLines: [{ wavelength: 360.1, intensity: 0.9, transition: "4d→5s" }, { wavelength: 349.6, intensity: 0.7, transition: "5p→4d" }]},
+              spectralLines: [
+                { wavelength: 349.6, intensity: 0.8, transition: "5p→4d (UV)" },
+                { wavelength: 360.1, intensity: 1.0, transition: "4d→5s (UV)" },
+                { wavelength: 468.8, intensity: 0.6, transition: "5p→4d (blue)" },
+                { wavelength: 614.7, intensity: 0.5, transition: "5p→4d (orange)" }
+            ]},
             { symbol: "Nb", name: "Niobium", atomicNumber: 41, category: "transition-metal", row: 5, col: 5,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Forged in supernovae, used in superconducting magnets.",
               chemistryInfo: "Transition metal, forms Nb³⁺ and Nb⁵⁺ ions. Used in superconducting magnets, steel alloys, and jewelry. Highly resistant to corrosion. Named after Niobe from Greek mythology.",
               physicsInfo: "Electron configuration: [Kr] 4d⁴ 5s¹. Isotope: ⁹³Nb (100%). Atomic mass: 92.906 u. Shells: 2, 8, 18, 12, 1.",
-              spectralLines: [{ wavelength: 405.9, intensity: 0.8, transition: "4d→5s" }, { wavelength: 412.4, intensity: 0.7, transition: "5p→4d" }]},
+              spectralLines: [
+                { wavelength: 405.9, intensity: 0.9, transition: "4d→5s (violet)" },
+                { wavelength: 412.4, intensity: 1.0, transition: "5p→4d (violet)" },
+                { wavelength: 417.9, intensity: 0.8, transition: "4d→5s (violet)" },
+                { wavelength: 468.4, intensity: 0.7, transition: "5p→4d (blue)" }
+            ]},
             { symbol: "Mo", name: "Molybdenum", atomicNumber: 42, category: "transition-metal", row: 5, col: 6,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Created in supernovae, essential for nitrogen-fixing enzymes.",
               chemistryInfo: "Transition metal, forms Mo³⁺, Mo⁴⁺, Mo⁵⁺, and Mo⁶⁺ ions. Essential for nitrogen-fixing enzymes in bacteria. Used in steel alloys, catalysts, and lubricants. Has one of the highest melting points.",
               physicsInfo: "Electron configuration: [Kr] 4d⁵ 5s¹. Isotopes: ⁹⁸Mo (24.39%), ⁹⁶Mo (16.67%), ⁹⁵Mo (15.84%), ⁹²Mo (14.53%), ¹⁰⁰Mo (9.82%), ⁹⁷Mo (9.60%), ⁹⁴Mo (9.15%). Atomic mass: 95.95 u. Shells: 2, 8, 18, 13, 1.",
-              spectralLines: [{ wavelength: 386.4, intensity: 1.0, transition: "4d→5s" }, { wavelength: 390.3, intensity: 0.8, transition: "5p→4d" }]},
+              spectralLines: [
+                { wavelength: 379.8, intensity: 0.9, transition: "4d→5s (UV)" },
+                { wavelength: 386.4, intensity: 1.0, transition: "4d→5s (violet)" },
+                { wavelength: 390.3, intensity: 0.9, transition: "5p→4d (violet)" },
+                { wavelength: 550.6, intensity: 0.7, transition: "5p→4d (green)" }
+            ]},
             { symbol: "Tc", name: "Technetium", atomicNumber: 43, category: "transition-metal", row: 5, col: 7,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "First artificially produced element, but also created in supernovae. All isotopes are radioactive.",
               chemistryInfo: "Transition metal, forms Tc⁴⁺, Tc⁶⁺, and Tc⁷⁺ ions. First element artificially produced. All isotopes radioactive. Used in medical imaging (⁹⁹ᵐTc). Prevents corrosion of steel.",
               physicsInfo: "Electron configuration: [Kr] 4d⁵ 5s². No stable isotopes. Most common: ⁹⁹Tc (half-life 211,000 years). Atomic mass: 98 u. Shells: 2, 8, 18, 13, 2.",
-              spectralLines: [{ wavelength: 403.2, intensity: 0.7, transition: "4d→5s" }, { wavelength: 426.2, intensity: 0.6, transition: "5p→4d" }]},
+              spectralLines: [
+                { wavelength: 403.2, intensity: 0.8, transition: "4d→5s (violet)" },
+                { wavelength: 426.2, intensity: 1.0, transition: "5p→4d (blue-violet)" },
+                { wavelength: 429.7, intensity: 0.9, transition: "4d→5s (blue)" },
+                { wavelength: 485.4, intensity: 0.7, transition: "5p→4d (blue)" }
+            ]},
             { symbol: "Ru", name: "Ruthenium", atomicNumber: 44, category: "transition-metal", row: 5, col: 8,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Produced in supernovae, used in electronics and catalysts.",
               chemistryInfo: "Transition metal, forms Ru²⁺, Ru³⁺, and Ru⁴⁺ ions. Platinum group metal. Used in electrical contacts, chip resistors, and catalysts. Hardens platinum and palladium alloys.",
               physicsInfo: "Electron configuration: [Kr] 4d⁷ 5s¹. Isotopes: ¹⁰²Ru (31.55%), ¹⁰⁴Ru (18.62%), ¹⁰¹Ru (17.06%), ⁹⁹Ru (12.76%), ¹⁰⁰Ru (12.60%), ⁹⁶Ru (5.54%), ⁹⁸Ru (1.87%). Atomic mass: 101.07 u. Shells: 2, 8, 18, 15, 1.",
-              spectralLines: [{ wavelength: 372.8, intensity: 0.9, transition: "4d→5s" }, { wavelength: 349.9, intensity: 0.7, transition: "5p→4d" }]},
+              spectralLines: [
+                { wavelength: 349.9, intensity: 0.8, transition: "5p→4d (UV)" },
+                { wavelength: 372.8, intensity: 1.0, transition: "4d→5s (UV)" },
+                { wavelength: 379.9, intensity: 0.9, transition: "4d→5s (UV)" },
+                { wavelength: 455.5, intensity: 0.6, transition: "5p→4d (blue)" },
+                { wavelength: 469.4, intensity: 0.7, transition: "5p→4d (blue)" }
+            ]},
             { symbol: "Rh", name: "Rhodium", atomicNumber: 45, category: "transition-metal", row: 5, col: 9,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Forged in supernovae, one of the rarest and most valuable metals.",
               chemistryInfo: "Transition metal, forms Rh³⁺ and Rh⁴⁺ ions. Platinum group metal. Extremely rare and valuable. Used in catalytic converters, jewelry plating, and industrial catalysts. Highly reflective.",
               physicsInfo: "Electron configuration: [Kr] 4d⁸ 5s¹. Isotope: ¹⁰³Rh (100%). Atomic mass: 102.91 u. Shells: 2, 8, 18, 16, 1.",
-              spectralLines: [{ wavelength: 369.2, intensity: 1.0, transition: "4d→5s" }, { wavelength: 343.5, intensity: 0.8, transition: "5p→4d" }]},
+              spectralLines: [
+                { wavelength: 343.5, intensity: 0.9, transition: "5p→4d (UV)" },
+                { wavelength: 369.2, intensity: 1.0, transition: "4d→5s (UV)" },
+                { wavelength: 372.8, intensity: 0.8, transition: "4d→5s (UV)" },
+                { wavelength: 437.5, intensity: 0.6, transition: "5p→4d (blue)" }
+            ]},
             { symbol: "Pd", name: "Palladium", atomicNumber: 46, category: "transition-metal", row: 5, col: 10,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Created in supernovae, used in catalytic converters.",
               chemistryInfo: "Transition metal, forms Pd²⁺ and Pd⁴⁺ ions. Platinum group metal. Used in catalytic converters, electronics, dentistry, and jewelry. Can absorb up to 900 times its volume in hydrogen.",
               physicsInfo: "Electron configuration: [Kr] 4d¹⁰. Isotopes: ¹⁰⁶Pd (27.33%), ¹⁰⁸Pd (26.46%), ¹⁰⁵Pd (22.33%), ¹¹⁰Pd (11.72%), ¹⁰⁴Pd (11.14%), ¹⁰²Pd (1.02%). Atomic mass: 106.42 u. Shells: 2, 8, 18, 18.",
-              spectralLines: [{ wavelength: 340.5, intensity: 1.0, transition: "5p→5s" }, { wavelength: 363.5, intensity: 0.7, transition: "5p→5s" }]},
+              spectralLines: [
+                { wavelength: 324.3, intensity: 0.8, transition: "5p→5s (UV)" },
+                { wavelength: 340.5, intensity: 1.0, transition: "5p→5s (UV)" },
+                { wavelength: 363.5, intensity: 0.9, transition: "5p→5s (UV)" },
+                { wavelength: 422.5, intensity: 0.6, transition: "5d→5p (blue-violet)" }
+            ]},
             { symbol: "Ag", name: "Silver", atomicNumber: 47, category: "transition-metal", row: 5, col: 11,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Produced in supernovae, the best conductor of electricity.",
               chemistryInfo: "Transition metal, forms Ag⁺ ions. Best electrical and thermal conductor of all elements. Used in jewelry, coins, electronics, and photography. Antibacterial properties. Tarnishes in air forming Ag₂S.",
               physicsInfo: "Electron configuration: [Kr] 4d¹⁰ 5s¹. Isotopes: ¹⁰⁷Ag (51.84%), ¹⁰⁹Ag (48.16%). Atomic mass: 107.87 u. Shells: 2, 8, 18, 18, 1.",
-              spectralLines: [{ wavelength: 328.1, intensity: 1.0, transition: "5p→5s" }, { wavelength: 338.3, intensity: 0.9, transition: "5p→5s" }]},
+              spectralLines: [
+                { wavelength: 328.1, intensity: 1.0, transition: "5p→5s (UV)" },
+                { wavelength: 338.3, intensity: 0.9, transition: "5p→5s (UV)" },
+                { wavelength: 405.5, intensity: 0.6, transition: "5d→5p (violet)" },
+                { wavelength: 421.2, intensity: 0.5, transition: "5d→5p (violet)" },
+                { wavelength: 520.9, intensity: 0.7, transition: "5d→5p (green)" },
+                { wavelength: 546.5, intensity: 0.6, transition: "5d→5p (green)" }
+            ]},
             { symbol: "Cd", name: "Cadmium", atomicNumber: 48, category: "transition-metal", row: 5, col: 12,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Forged in supernovae, used in batteries and pigments.",
               chemistryInfo: "Transition metal, forms Cd²⁺ ions. Soft, bluish-white metal. Used in rechargeable batteries, pigments, and coatings. Toxic to humans. Absorbs neutrons, used in nuclear reactor control rods.",
               physicsInfo: "Electron configuration: [Kr] 4d¹⁰ 5s². Isotopes: ¹¹⁴Cd (28.73%), ¹¹²Cd (24.13%), ¹¹¹Cd (12.80%), ¹¹⁰Cd (12.51%), ¹¹³Cd (12.22%), ¹¹⁶Cd (7.49%), ¹⁰⁶Cd (1.25%), ¹⁰⁸Cd (0.89%). Atomic mass: 112.41 u. Shells: 2, 8, 18, 18, 2.",
-              spectralLines: [{ wavelength: 228.8, intensity: 1.0, transition: "5p→5s" }, { wavelength: 326.1, intensity: 0.7, transition: "6s→5p" }]},
+              spectralLines: [
+                { wavelength: 228.8, intensity: 1.0, transition: "5p→5s (UV)" },
+                { wavelength: 326.1, intensity: 0.8, transition: "6s→5p (UV)" },
+                { wavelength: 361.1, intensity: 0.7, transition: "6s→5p (UV)" },
+                { wavelength: 467.8, intensity: 0.6, transition: "6p→6s (blue)" },
+                { wavelength: 508.6, intensity: 0.7, transition: "6p→6s (cyan)" },
+                { wavelength: 643.8, intensity: 0.8, transition: "6p→6s (red)" }
+            ]},
             { symbol: "In", name: "Indium", atomicNumber: 49, category: "metal", row: 5, col: 13,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Created in supernovae, used in touchscreens and solar panels.",
               chemistryInfo: "Post-transition metal, forms In⁺ and In³⁺ ions. Soft and malleable. Used in touchscreens (ITO), solar panels, and LEDs. Named for its indigo spectral line. Very rare in Earth's crust.",
               physicsInfo: "Electron configuration: [Kr] 4d¹⁰ 5s² 5p¹. Isotopes: ¹¹⁵In (95.71%, radioactive), ¹¹³In (4.29%). Atomic mass: 114.82 u. Shells: 2, 8, 18, 18, 3.",
-              spectralLines: [{ wavelength: 451.1, intensity: 1.0, transition: "5p→5s" }, { wavelength: 410.2, intensity: 0.8, transition: "6s→5p" }]},
+              spectralLines: [
+                { wavelength: 303.9, intensity: 0.7, transition: "5p→5s (UV)" },
+                { wavelength: 325.6, intensity: 0.6, transition: "5p→5s (UV)" },
+                { wavelength: 410.2, intensity: 0.9, transition: "6s→5p (violet)" },
+                { wavelength: 451.1, intensity: 1.0, transition: "5p→5s (indigo blue)" },
+                { wavelength: 465.0, intensity: 0.8, transition: "6s→5p (blue)" }
+            ]},
             { symbol: "Sn", name: "Tin", atomicNumber: 50, category: "metal", row: 5, col: 14,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Produced in supernovae, used since ancient times for bronze.",
               chemistryInfo: "Post-transition metal, forms Sn²⁺ and Sn⁴⁺ ions. Used since ancient times in bronze (Cu+Sn). Used in solder, tin cans, and pewter. Malleable and corrosion-resistant. Has two allotropes (white and gray tin).",
               physicsInfo: "Electron configuration: [Kr] 4d¹⁰ 5s² 5p². Isotopes: ¹²⁰Sn (32.58%), ¹¹⁸Sn (24.22%), ¹¹⁶Sn (14.54%), ¹¹⁹Sn (8.59%), ¹¹⁷Sn (7.68%), ¹²⁴Sn (5.79%), ¹²²Sn (4.63%), ¹¹²Sn (0.97%), ¹¹⁴Sn (0.66%), ¹¹⁵Sn (0.34%). Atomic mass: 118.71 u. Shells: 2, 8, 18, 18, 4.",
-              spectralLines: [{ wavelength: 284.0, intensity: 1.0, transition: "5p→5s" }, { wavelength: 317.5, intensity: 0.7, transition: "6s→5p" }]},
+              spectralLines: [
+                { wavelength: 284.0, intensity: 1.0, transition: "5p→5s (UV)" },
+                { wavelength: 317.5, intensity: 0.9, transition: "6s→5p (UV)" },
+                { wavelength: 452.5, intensity: 0.6, transition: "6p→6s (blue)" },
+                { wavelength: 533.5, intensity: 0.7, transition: "6p→6s (green)" }
+            ]},
             { symbol: "Sb", name: "Antimony", atomicNumber: 51, category: "metalloid", row: 5, col: 15,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Forged in supernovae, used in flame retardants and semiconductors.",
               chemistryInfo: "Metalloid, forms Sb³⁺ and Sb⁵⁺ ions. Used in flame retardants, batteries, and semiconductors. Brittle and silvery. Known since ancient times. Toxic in large amounts.",
               physicsInfo: "Electron configuration: [Kr] 4d¹⁰ 5s² 5p³. Isotopes: ¹²¹Sb (57.21%), ¹²³Sb (42.79%). Atomic mass: 121.76 u. Shells: 2, 8, 18, 18, 5.",
-              spectralLines: [{ wavelength: 259.8, intensity: 0.9, transition: "5p→5s" }, { wavelength: 252.9, intensity: 0.7, transition: "6s→5p" }]},
+              spectralLines: [
+                { wavelength: 252.9, intensity: 0.8, transition: "6s→5p (UV)" },
+                { wavelength: 259.8, intensity: 1.0, transition: "5p→5s (UV)" },
+                { wavelength: 287.8, intensity: 0.7, transition: "6s→5p (UV)" },
+                { wavelength: 326.8, intensity: 0.6, transition: "6p→6s (UV)" }
+            ]},
             { symbol: "Te", name: "Tellurium", atomicNumber: 52, category: "metalloid", row: 5, col: 16,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Created in supernovae, used in solar panels and thermoelectrics.",
               chemistryInfo: "Metalloid, forms Te²⁻, Te⁴⁺, and Te⁶⁺ ions. Used in solar panels, thermoelectric devices, and DVDs. Brittle and silvery-white. Gives garlic-like odor to breath when ingested.",
               physicsInfo: "Electron configuration: [Kr] 4d¹⁰ 5s² 5p⁴. Isotopes: ¹³⁰Te (34.08%), ¹²⁸Te (31.74%), ¹²⁶Te (18.84%), ¹²⁵Te (7.07%), ¹²⁴Te (4.74%), ¹²²Te (2.55%), ¹²³Te (0.89%), ¹²⁰Te (0.09%). Atomic mass: 127.60 u. Shells: 2, 8, 18, 18, 6.",
-              spectralLines: [{ wavelength: 214.3, intensity: 0.9, transition: "5p→5s" }, { wavelength: 238.6, intensity: 0.7, transition: "6s→5p" }]},
+              spectralLines: [
+                { wavelength: 214.3, intensity: 1.0, transition: "5p→5s (UV)" },
+                { wavelength: 238.6, intensity: 0.9, transition: "6s→5p (UV)" },
+                { wavelength: 452.5, intensity: 0.5, transition: "6p→6s (blue)" },
+                { wavelength: 486.0, intensity: 0.4, transition: "6p→6s (blue)" }
+            ]},
             { symbol: "I", name: "Iodine", atomicNumber: 53, category: "halogen", row: 5, col: 17,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Produced in supernovae, essential for thyroid hormones.",
               chemistryInfo: "Halogen, forms I⁻ ions. Essential for thyroid hormones. Violet vapor when heated. Used in disinfectants, dyes, and photography. Found in seaweed and iodized salt. Deficiency causes goiter.",
               physicsInfo: "Electron configuration: [Kr] 4d¹⁰ 5s² 5p⁵. Isotope: ¹²⁷I (100%). Atomic mass: 126.90 u. Shells: 2, 8, 18, 18, 7.",
-              spectralLines: [{ wavelength: 546.5, intensity: 0.8, transition: "5p→5s" }, { wavelength: 516.1, intensity: 0.6, transition: "6s→5p" }]},
+              spectralLines: [
+                { wavelength: 516.1, intensity: 0.7, transition: "6s→5p (green)" },
+                { wavelength: 546.5, intensity: 0.9, transition: "5p→5s (green)" },
+                { wavelength: 804.4, intensity: 0.8, transition: "6p→6s (near-IR)" },
+                { wavelength: 905.8, intensity: 1.0, transition: "6p→6s (near-IR)" }
+            ]},
             { symbol: "Xe", name: "Xenon", atomicNumber: 54, category: "noble-gas", row: 5, col: 18,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Forged in supernovae, used in high-intensity lamps and anesthesia.",
               chemistryInfo: "Noble gas, can form compounds (unlike lighter noble gases). Used in flash lamps, arc lamps, anesthesia, and ion propulsion. Produces brilliant white light. Extremely rare in Earth's atmosphere.",
               physicsInfo: "Electron configuration: [Kr] 4d¹⁰ 5s² 5p⁶. Isotopes: ¹³²Xe (26.89%), ¹²⁹Xe (26.40%), ¹³¹Xe (21.23%), ¹³⁴Xe (10.44%), ¹³⁶Xe (8.86%), ¹³⁰Xe (4.07%), ¹²⁸Xe (1.91%), ¹²⁴Xe (0.10%), ¹²⁶Xe (0.09%). Atomic mass: 131.29 u. Shells: 2, 8, 18, 18, 8.",
-              spectralLines: [{ wavelength: 462.4, intensity: 1.0, transition: "6p→6s" }, { wavelength: 467.1, intensity: 0.8, transition: "6p→6s" }]},
+              spectralLines: [
+                { wavelength: 450.1, intensity: 0.8, transition: "6p→6s (blue)" },
+                { wavelength: 462.4, intensity: 1.0, transition: "6p→6s (blue)" },
+                { wavelength: 467.1, intensity: 0.9, transition: "6p→6s (blue)" },
+                { wavelength: 480.7, intensity: 0.7, transition: "6p→6s (blue)" },
+                { wavelength: 823.2, intensity: 0.8, transition: "6p→6s (near-IR)" },
+                { wavelength: 828.0, intensity: 0.7, transition: "6p→6s (near-IR)" }
+            ]},
             // Period 6
             { symbol: "Cs", name: "Cesium", atomicNumber: 55, category: "alkali-metal", row: 6, col: 1,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Created in supernovae, defines the second in atomic clocks.",
               chemistryInfo: "Highly reactive alkali metal, forms Cs⁺ ions. Most electropositive element. Ignites spontaneously in air. Used in atomic clocks (defines the second), photoelectric cells, and drilling fluids. Soft and golden.",
               physicsInfo: "Electron configuration: [Xe] 6s¹. Isotope: ¹³³Cs (100%). Atomic mass: 132.91 u. Shells: 2, 8, 18, 18, 8, 1.",
-              spectralLines: [{ wavelength: 852.1, intensity: 1.0, transition: "6p→6s" }, { wavelength: 894.3, intensity: 0.9, transition: "6p→6s" }]},
+              spectralLines: [
+                { wavelength: 455.5, intensity: 0.7, transition: "6p→6s (blue)" },
+                { wavelength: 459.3, intensity: 0.6, transition: "6p→6s (blue)" },
+                { wavelength: 672.3, intensity: 0.8, transition: "6p→6s (red)" },
+                { wavelength: 852.1, intensity: 1.0, transition: "6p→6s (near-IR)" },
+                { wavelength: 894.3, intensity: 0.9, transition: "6p→6s (near-IR)" }
+            ]},
             { symbol: "Ba", name: "Barium", atomicNumber: 56, category: "alkaline-earth", row: 6, col: 2,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Produced in supernovae, gives fireworks their green color.",
               chemistryInfo: "Alkaline earth metal, forms Ba²⁺ ions. Gives fireworks their green color. Used in medical imaging (barium meals), drilling fluids, and glass. Reactive with water. Compounds are toxic except BaSO₄.",
               physicsInfo: "Electron configuration: [Xe] 6s². Isotopes: ¹³⁸Ba (71.70%), ¹³⁷Ba (11.23%), ¹³⁶Ba (7.85%), ¹³⁵Ba (6.59%), ¹³⁴Ba (2.42%), ¹³⁰Ba (0.11%), ¹³²Ba (0.10%). Atomic mass: 137.33 u. Shells: 2, 8, 18, 18, 8, 2.",
-              spectralLines: [{ wavelength: 553.5, intensity: 1.0, transition: "6p→6s" }, { wavelength: 455.4, intensity: 0.8, transition: "7s→6p" }]},
+              spectralLines: [
+                { wavelength: 455.4, intensity: 0.9, transition: "7s→6p (blue)" },
+                { wavelength: 493.4, intensity: 0.8, transition: "6p→6s (cyan)" },
+                { wavelength: 513.7, intensity: 1.0, transition: "6p→6s (green)" },
+                { wavelength: 553.5, intensity: 1.0, transition: "6p→6s (green)" },
+                { wavelength: 577.8, intensity: 0.7, transition: "6p→6s (yellow)" },
+                { wavelength: 614.2, intensity: 0.6, transition: "6p→6s (orange)" }
+            ]},
             { symbol: "Hf", name: "Hafnium", atomicNumber: 72, category: "transition-metal", row: 6, col: 4,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Forged in supernovae, used in nuclear reactors and microchips.",
               chemistryInfo: "Transition metal, forms Hf⁴⁺ ions. Excellent neutron absorber used in nuclear reactor control rods. Used in microchips and superalloys. Chemically similar to zirconium. Very corrosion-resistant.",
               physicsInfo: "Electron configuration: [Xe] 4f¹⁴ 5d² 6s². Isotopes: ¹⁸⁰Hf (35.08%), ¹⁷⁸Hf (27.28%), ¹⁷⁷Hf (18.60%), ¹⁷⁹Hf (13.62%), ¹⁷⁶Hf (5.26%), ¹⁷⁴Hf (0.16%). Atomic mass: 178.49 u. Shells: 2, 8, 18, 32, 10, 2.",
-              spectralLines: [{ wavelength: 368.2, intensity: 0.8, transition: "5d→6s" }, { wavelength: 339.9, intensity: 0.6, transition: "6p→5d" }]},
+              spectralLines: [
+                { wavelength: 339.9, intensity: 0.7, transition: "6p→5d (UV)" },
+                { wavelength: 368.2, intensity: 0.9, transition: "5d→6s (UV)" },
+                { wavelength: 407.5, intensity: 1.0, transition: "5d→6s (violet)" },
+                { wavelength: 495.2, intensity: 0.6, transition: "6p→5d (cyan)" }
+            ]},
             { symbol: "Ta", name: "Tantalum", atomicNumber: 73, category: "transition-metal", row: 6, col: 5,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Created in supernovae, extremely corrosion-resistant.",
               chemistryInfo: "Transition metal, forms Ta⁵⁺ ions. Extremely corrosion-resistant, immune to most acids. Used in capacitors, surgical implants, and jet engines. Named after Tantalus from Greek mythology.",
               physicsInfo: "Electron configuration: [Xe] 4f¹⁴ 5d³ 6s². Isotopes: ¹⁸¹Ta (99.988%), ¹⁸⁰Ta (0.012%, radioactive). Atomic mass: 180.95 u. Shells: 2, 8, 18, 32, 11, 2.",
-              spectralLines: [{ wavelength: 271.5, intensity: 0.9, transition: "5d→6s" }, { wavelength: 263.6, intensity: 0.7, transition: "6p→5d" }]},
+              spectralLines: [
+                { wavelength: 263.6, intensity: 0.8, transition: "6p→5d (UV)" },
+                { wavelength: 271.5, intensity: 1.0, transition: "5d→6s (UV)" },
+                { wavelength: 301.3, intensity: 0.7, transition: "5d→6s (UV)" },
+                { wavelength: 411.9, intensity: 0.6, transition: "6p→5d (violet)" }
+            ]},
             { symbol: "W", name: "Tungsten", atomicNumber: 74, category: "transition-metal", row: 6, col: 6,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Produced in supernovae, has the highest melting point of all elements.",
               chemistryInfo: "Transition metal, forms W⁴⁺ and W⁶⁺ ions. Highest melting point (3422°C) of all elements. Used in light bulb filaments, X-ray tubes, and armor-piercing ammunition. Extremely dense and hard.",
               physicsInfo: "Electron configuration: [Xe] 4f¹⁴ 5d⁴ 6s². Isotopes: ¹⁸⁴W (30.64%), ¹⁸⁶W (28.43%), ¹⁸²W (26.50%), ¹⁸³W (14.31%), ¹⁸⁰W (0.12%). Atomic mass: 183.84 u. Shells: 2, 8, 18, 32, 12, 2.",
-              spectralLines: [{ wavelength: 400.9, intensity: 1.0, transition: "5d→6s" }, { wavelength: 429.5, intensity: 0.8, transition: "6p→5d" }]},
+              spectralLines: [
+                { wavelength: 400.9, intensity: 1.0, transition: "5d→6s (violet)" },
+                { wavelength: 407.4, intensity: 0.9, transition: "5d→6s (violet)" },
+                { wavelength: 429.5, intensity: 0.9, transition: "6p→5d (blue)" },
+                { wavelength: 468.0, intensity: 0.7, transition: "6p→5d (blue)" },
+                { wavelength: 505.3, intensity: 0.6, transition: "6p→5d (cyan)" }
+            ]},
             { symbol: "Re", name: "Rhenium", atomicNumber: 75, category: "transition-metal", row: 6, col: 7,
               cosmicOrigin: "Exploding Massive Stars", originColor: "#00CED1",
               astronomyInfo: "Forged in supernovae, one of the rarest elements in Earth's crust.",
               chemistryInfo: "Transition metal, forms Re⁴⁺, Re⁶⁺, and Re⁷⁺ ions. One of the rarest elements in Earth's crust. Third highest melting point. Used in jet engine parts and catalysts. Named after the Rhine river.",
               physicsInfo: "Electron configuration: [Xe] 4f¹⁴ 5d⁵ 6s². Isotopes: ¹⁸⁷Re (62.60%, radioactive), ¹⁸⁵Re (37.40%). Atomic mass: 186.21 u. Shells: 2, 8, 18, 32, 13, 2.",
-              spectralLines: [{ wavelength: 346.0, intensity: 0.9, transition: "5d→6s" }, { wavelength: 345.2, intensity: 0.8, transition: "6p→5d" }]},
+              spectralLines: [
+                { wavelength: 345.2, intensity: 0.9, transition: "6p→5d (UV)" },
+                { wavelength: 346.0, intensity: 1.0, transition: "5d→6s (UV)" },
+                { wavelength: 488.0, intensity: 0.6, transition: "6p→5d (blue)" },
+                { wavelength: 489.2, intensity: 0.7, transition: "6p→5d (blue)" }
+            ]},
             { symbol: "Os", name: "Osmium", atomicNumber: 76, category: "transition-metal", row: 6, col: 8,
               cosmicOrigin: "Merging Neutron Stars", originColor: "#FF4500",
               astronomyInfo: "Created in neutron star collisions, the densest naturally occurring element.",
               chemistryInfo: "Transition metal, forms Os⁴⁺ and Os⁸⁺ ions. Densest naturally occurring element (22.59 g/cm³). Platinum group metal. Used in fountain pen tips and electrical contacts. OsO₄ is highly toxic.",
               physicsInfo: "Electron configuration: [Xe] 4f¹⁴ 5d⁶ 6s². Isotopes: ¹⁹²Os (40.78%), ¹⁹⁰Os (26.26%), ¹⁸⁹Os (16.15%), ¹⁸⁸Os (13.24%), ¹⁸⁷Os (1.96%), ¹⁸⁶Os (1.59%), ¹⁸⁴Os (0.02%). Atomic mass: 190.23 u. Shells: 2, 8, 18, 32, 14, 2.",
-              spectralLines: [{ wavelength: 330.2, intensity: 0.8, transition: "5d→6s" }, { wavelength: 305.9, intensity: 0.7, transition: "6p→5d" }]},
+              spectralLines: [
+                { wavelength: 305.9, intensity: 0.8, transition: "6p→5d (UV)" },
+                { wavelength: 330.2, intensity: 1.0, transition: "5d→6s (UV)" },
+                { wavelength: 442.0, intensity: 0.6, transition: "6p→5d (blue)" },
+                { wavelength: 426.1, intensity: 0.7, transition: "6p→5d (blue)" }
+            ]},
             { symbol: "Ir", name: "Iridium", atomicNumber: 77, category: "transition-metal", row: 6, col: 9,
               cosmicOrigin: "Merging Neutron Stars", originColor: "#FF4500",
               astronomyInfo: "Forged in neutron star collisions, found in the asteroid impact layer that killed the dinosaurs.",
               chemistryInfo: "Transition metal, forms Ir³⁺ and Ir⁴⁺ ions. Second densest element. Most corrosion-resistant metal. Platinum group metal. Found in the K-T boundary layer from the dinosaur-killing asteroid impact.",
               physicsInfo: "Electron configuration: [Xe] 4f¹⁴ 5d⁷ 6s². Isotopes: ¹⁹³Ir (62.7%), ¹⁹¹Ir (37.3%). Atomic mass: 192.22 u. Shells: 2, 8, 18, 32, 15, 2.",
-              spectralLines: [{ wavelength: 380.0, intensity: 0.9, transition: "5d→6s" }, { wavelength: 322.1, intensity: 0.7, transition: "6p→5d" }]},
+              spectralLines: [
+                { wavelength: 322.1, intensity: 0.8, transition: "6p→5d (UV)" },
+                { wavelength: 380.0, intensity: 1.0, transition: "5d→6s (UV)" },
+                { wavelength: 424.9, intensity: 0.7, transition: "6p→5d (blue-violet)" },
+                { wavelength: 449.8, intensity: 0.6, transition: "6p→5d (blue)" }
+            ]},
             { symbol: "Pt", name: "Platinum", atomicNumber: 78, category: "transition-metal", row: 6, col: 10,
               cosmicOrigin: "Merging Neutron Stars", originColor: "#FF4500",
               astronomyInfo: "Created in neutron star collisions, extremely rare and valuable.",
               chemistryInfo: "Transition metal, forms Pt²⁺ and Pt⁴⁺ ions. Platinum group metal. Extremely rare and valuable. Used in catalytic converters, jewelry, laboratory equipment, and cancer drugs (cisplatin). Highly unreactive.",
               physicsInfo: "Electron configuration: [Xe] 4f¹⁴ 5d⁹ 6s¹. Isotopes: ¹⁹⁵Pt (33.83%), ¹⁹⁴Pt (32.97%), ¹⁹⁶Pt (25.24%), ¹⁹⁸Pt (7.16%), ¹⁹²Pt (0.78%), ¹⁹⁰Pt (0.01%). Atomic mass: 195.08 u. Shells: 2, 8, 18, 32, 17, 1.",
-              spectralLines: [{ wavelength: 265.9, intensity: 1.0, transition: "6p→6s" }, { wavelength: 299.8, intensity: 0.8, transition: "6p→6s" }]},
+              spectralLines: [
+                { wavelength: 265.9, intensity: 1.0, transition: "6p→6s (UV)" },
+                { wavelength: 299.8, intensity: 0.9, transition: "6p→6s (UV)" },
+                { wavelength: 306.5, intensity: 0.8, transition: "6p→6s (UV)" },
+                { wavelength: 390.5, intensity: 0.6, transition: "6d→6p (violet)" }
+            ]},
             { symbol: "Hg", name: "Mercury", atomicNumber: 80, category: "transition-metal", row: 6, col: 12,
               cosmicOrigin: "Merging Neutron Stars", originColor: "#FF4500",
               astronomyInfo: "Produced in neutron star collisions, the only metal that's liquid at room temperature.",
               chemistryInfo: "Transition metal, forms Hg⁺ and Hg²⁺ ions. Only metal liquid at room temperature. Used in thermometers, barometers, fluorescent lights, and dental amalgams. Highly toxic, especially as vapor and methylmercury.",
               physicsInfo: "Electron configuration: [Xe] 4f¹⁴ 5d¹⁰ 6s². Isotopes: ²⁰²Hg (29.86%), ²⁰⁰Hg (23.10%), ¹⁹⁹Hg (16.87%), ²⁰¹Hg (13.18%), ¹⁹⁸Hg (9.97%), ²⁰⁴Hg (6.87%), ¹⁹⁶Hg (0.15%). Atomic mass: 200.59 u. Shells: 2, 8, 18, 32, 18, 2.",
-              spectralLines: [{ wavelength: 253.7, intensity: 1.0, transition: "6p→6s" }, { wavelength: 365.0, intensity: 0.7, transition: "7s→6p" }]},
+              spectralLines: [
+                { wavelength: 253.7, intensity: 1.0, transition: "6p→6s (UV)" },
+                { wavelength: 365.0, intensity: 0.7, transition: "7s→6p (UV)" },
+                { wavelength: 404.7, intensity: 0.9, transition: "7s→6p (violet)" },
+                { wavelength: 435.8, intensity: 1.0, transition: "7s→6p (blue)" },
+                { wavelength: 546.1, intensity: 0.8, transition: "7s→6p (green)" },
+                { wavelength: 577.0, intensity: 0.6, transition: "7s→6p (yellow)" },
+                { wavelength: 579.1, intensity: 0.6, transition: "7s→6p (yellow)" }
+            ]},
             { symbol: "Tl", name: "Thallium", atomicNumber: 81, category: "metal", row: 6, col: 13,
               cosmicOrigin: "Merging Neutron Stars", originColor: "#FF4500",
               astronomyInfo: "Forged in neutron star collisions, highly toxic but used in medical imaging.",
               chemistryInfo: "Post-transition metal, forms Tl⁺ and Tl³⁺ ions. Soft and malleable. Highly toxic (used as rat poison). Used in medical imaging, electronics, and infrared detectors. Named for its bright green spectral line (thallos = green twig).",
               physicsInfo: "Electron configuration: [Xe] 4f¹⁴ 5d¹⁰ 6s² 6p¹. Isotopes: ²⁰⁵Tl (70.48%), ²⁰³Tl (29.52%). Atomic mass: 204.38 u. Shells: 2, 8, 18, 32, 18, 3.",
-              spectralLines: [{ wavelength: 535.0, intensity: 1.0, transition: "6p→6s" }, { wavelength: 377.6, intensity: 0.7, transition: "7s→6p" }]},
+              spectralLines: [
+                { wavelength: 377.6, intensity: 0.9, transition: "7s→6p (UV)" },
+                { wavelength: 535.0, intensity: 1.0, transition: "6p→6s (green)" },
+                { wavelength: 291.8, intensity: 0.7, transition: "7s→6p (UV)" }
+            ]},
             { symbol: "Pb", name: "Lead", atomicNumber: 82, category: "metal", row: 6, col: 14,
               cosmicOrigin: "Merging Neutron Stars", originColor: "#FF4500",
               astronomyInfo: "Created in neutron star collisions, the final stable element in the periodic table.",
@@ -1703,6 +2029,126 @@
                 
                 
                 modalContent.appendChild(canvas);
+                
+                // Add Absorption Spectrum
+                const absorptionTitle = document.createElement('h3');
+                absorptionTitle.textContent = 'Absorption Spectrum';
+                absorptionTitle.style.color = '#4fc3f7';
+                absorptionTitle.style.marginTop = '30px';
+                absorptionTitle.style.marginBottom = '10px';
+                absorptionTitle.style.fontSize = '20px';
+                absorptionTitle.style.textAlign = 'center';
+                modalContent.appendChild(absorptionTitle);
+                
+                const absorptionSubtitle = document.createElement('p');
+                absorptionSubtitle.textContent = 'Dark lines show wavelengths absorbed by the element';
+                absorptionSubtitle.style.color = '#aaa';
+                absorptionSubtitle.style.textAlign = 'center';
+                absorptionSubtitle.style.marginBottom = '15px';
+                absorptionSubtitle.style.fontSize = '14px';
+                modalContent.appendChild(absorptionSubtitle);
+                
+                const absCanvas = document.createElement('canvas');
+                absCanvas.width = 1400;
+                absCanvas.height = 200;
+                absCanvas.style.width = '100%';
+                absCanvas.style.border = '2px solid rgba(255, 255, 255, 0.3)';
+                absCanvas.style.borderRadius = '10px';
+                absCanvas.style.background = '#000';
+                
+                const absCtx = absCanvas.getContext('2d');
+                absCtx.fillStyle = '#000';
+                absCtx.fillRect(0, 0, absCanvas.width, absCanvas.height);
+                
+                // Draw continuous spectrum background (bright)
+                const absGradientHeight = 80;
+                const absGradientY = 60;
+                
+                if (showExtended) {
+                    // For extended view, show regions
+                    const regions = [
+                        { start: 200, end: 380, color: '#8A2BE2' },
+                        { start: 750, end: 1000, color: '#ff0000' }
+                    ];
+                    
+                    // UV region
+                    const uvX1 = ((200 - minWave) / range) * (absCanvas.width - 80) + 40;
+                    const uvX2 = ((380 - minWave) / range) * (absCanvas.width - 80) + 40;
+                    const uvGradient = absCtx.createLinearGradient(uvX1, 0, uvX2, 0);
+                    uvGradient.addColorStop(0, 'rgba(138, 43, 226, 0.3)');
+                    uvGradient.addColorStop(1, 'rgba(138, 43, 226, 0.6)');
+                    absCtx.fillStyle = uvGradient;
+                    absCtx.fillRect(uvX1, absGradientY, uvX2 - uvX1, absGradientHeight);
+                    
+                    // Visible spectrum
+                    for (let w = 380; w <= 750; w += 1) {
+                        const x = ((w - minWave) / range) * (absCanvas.width - 80) + 40;
+                        const color = wavelengthToRGB(w);
+                        absCtx.fillStyle = `rgb(${Math.floor(color.r * 255)}, ${Math.floor(color.g * 255)}, ${Math.floor(color.b * 255)})`;
+                        absCtx.fillRect(x, absGradientY, 2, absGradientHeight);
+                    }
+                    
+                    // IR region
+                    const irX1 = ((750 - minWave) / range) * (absCanvas.width - 80) + 40;
+                    const irX2 = ((1000 - minWave) / range) * (absCanvas.width - 80) + 40;
+                    const irGradient = absCtx.createLinearGradient(irX1, 0, irX2, 0);
+                    irGradient.addColorStop(0, 'rgba(255, 0, 0, 0.6)');
+                    irGradient.addColorStop(1, 'rgba(255, 0, 0, 0.3)');
+                    absCtx.fillStyle = irGradient;
+                    absCtx.fillRect(irX1, absGradientY, irX2 - irX1, absGradientHeight);
+                } else {
+                    // Visible spectrum only
+                    for (let w = visStart; w <= visEnd; w += 1) {
+                        const x = ((w - minWave) / range) * (absCanvas.width - 80) + 40;
+                        const color = wavelengthToRGB(w);
+                        absCtx.fillStyle = `rgb(${Math.floor(color.r * 255)}, ${Math.floor(color.g * 255)}, ${Math.floor(color.b * 255)})`;
+                        absCtx.fillRect(x, absGradientY, 2, absGradientHeight);
+                    }
+                }
+                
+                // Draw absorption lines (dark lines on bright background)
+                lines.forEach(line => {
+                    if (line.wavelength >= minWave && line.wavelength <= maxWave) {
+                        const x = ((line.wavelength - minWave) / range) * (absCanvas.width - 80) + 40;
+                        const intensity = line.intensity || 0.5;
+                        const lineWidth = 2 + intensity * 3;
+                        
+                        // Draw dark line
+                        absCtx.fillStyle = 'rgba(0, 0, 0, 0.9)';
+                        absCtx.fillRect(x - lineWidth/2, absGradientY, lineWidth, absGradientHeight);
+                        
+                        // Add subtle shadow for depth
+                        absCtx.shadowBlur = 3;
+                        absCtx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+                        absCtx.fillRect(x - lineWidth/2, absGradientY, lineWidth, absGradientHeight);
+                        absCtx.shadowBlur = 0;
+                    }
+                });
+                
+                // Draw wavelength scale
+                absCtx.strokeStyle = '#666';
+                absCtx.lineWidth = 1;
+                absCtx.fillStyle = '#aaa';
+                absCtx.font = '12px Arial';
+                absCtx.textAlign = 'center';
+                
+                const absScaleY = absGradientY + absGradientHeight;
+                for (let w = startTick; w <= maxWave; w += tickInterval) {
+                    const x = ((w - minWave) / range) * (absCanvas.width - 80) + 40;
+                    absCtx.beginPath();
+                    absCtx.moveTo(x, absScaleY);
+                    absCtx.lineTo(x, absScaleY + 10);
+                    absCtx.stroke();
+                    absCtx.fillText(w, x, absScaleY + 25);
+                }
+                
+                // Add label
+                absCtx.fillStyle = '#aaa';
+                absCtx.font = '14px Arial';
+                absCtx.textAlign = 'right';
+                absCtx.fillText('Wavelength (nm)', absCanvas.width - 45, absScaleY + 25);
+                
+                modalContent.appendChild(absCanvas);
                 
                 // Add line details table
                 const detailsTitle = document.createElement('h3');
